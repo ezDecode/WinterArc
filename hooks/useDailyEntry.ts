@@ -66,8 +66,8 @@ export function useDailyEntry(): UseDailyEntryReturn {
   }, [])
 
   // Save function for auto-save
-  const saveEntry = useCallback(async (data: DailyEntry) => {
-    if (!data.entry_date) return
+  const saveEntry = useCallback(async (data: DailyEntry | null) => {
+    if (!data || !data.entry_date) return
 
     const response = await fetch(`/api/daily/${data.entry_date}`, {
       method: 'PATCH',
