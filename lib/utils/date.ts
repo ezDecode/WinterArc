@@ -87,4 +87,3 @@ export function getDateRange(startDate: Date, endDate: Date): Date[] {
   
   return dates
 }
-

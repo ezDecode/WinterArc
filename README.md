@@ -190,4 +190,3 @@ This is a personal project, but suggestions and bug reports are welcome!
 ## License
 
 MIT License - See LICENSE file for details
-

@@ -76,4 +76,3 @@ export function ReadingTracker({ reading, onChange }: ReadingTrackerProps) {
     </div>
   )
 }
-

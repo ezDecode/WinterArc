@@ -109,4 +109,3 @@ export function calculateTargetCompletion(
 
   return Math.round((completedCount / entries.length) * 100)
 }
-

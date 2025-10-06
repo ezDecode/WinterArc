@@ -255,4 +255,3 @@ Will build:
 Once you complete steps 2-4 above, you're ready to start building the daily tracker in Phase 2.
 
 **Happy coding! 🎉**
-

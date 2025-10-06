@@ -108,4 +108,3 @@ export interface ScorecardData {
     weekTotal: number
   }[]
 }
-

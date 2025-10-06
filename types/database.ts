@@ -158,4 +158,3 @@ export interface Database {
     }
   }
 }
-

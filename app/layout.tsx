@@ -12,7 +12,6 @@ const interTight = Inter_Tight({
 export const metadata: Metadata = {
   title: 'Winter Arc Tracker',
   description: 'A 90-day personal habit tracking application with automatic daily resets and comprehensive progress analytics',
-  manifest: '/manifest.json',
 }
 
 export const viewport: Viewport = {
@@ -37,4 +36,3 @@ export default function RootLayout({
     </ClerkProvider>
   )
 }
-

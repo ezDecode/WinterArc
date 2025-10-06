@@ -1,6 +1,6 @@
 import { auth } from '@clerk/nextjs/server'
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase/client'
+import { supabaseAdmin } from '@/lib/supabase/server'
 import type { DailyEntry } from '@/types'
 
 export async function GET(request: NextRequest) {
@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get user profile
-    const { data: profile, error: profileError } = await supabase
+    const { data: profile, error: profileError } = await supabaseAdmin
       .from('profiles')
       .select('id')
       .eq('clerk_user_id', userId)
@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get entries for date range
-    const { data: entries, error: entriesError } = await supabase
+    const { data: entries, error: entriesError } = await supabaseAdmin
       .from('daily_entries')
       .select('*')
       .eq('user_id', profile.id)
@@ -53,4 +53,3 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
-

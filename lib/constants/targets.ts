@@ -55,4 +55,3 @@ export const SCORE_COLORS = {
   LOW: '#ef4444',     // red (0-2/5)
   FUTURE: '#6b7280',  // gray (future dates)
 } as const
-

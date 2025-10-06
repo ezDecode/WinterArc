@@ -100,4 +100,3 @@ export function PushupsTracker({ pushups, onChange }: PushupsTrackerProps) {
     </div>
   )
 }
-

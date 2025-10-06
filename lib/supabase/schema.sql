@@ -301,4 +301,3 @@ DROP TABLE IF EXISTS daily_entries CASCADE;
 DROP TABLE IF EXISTS profiles CASCADE;
 DROP FUNCTION IF EXISTS update_updated_at_column() CASCADE;
 */
-

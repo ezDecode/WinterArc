@@ -82,4 +82,3 @@ export function StudyBlocksTracker({ blocks, onChange }: StudyBlocksTrackerProps
     </div>
   )
 }
-

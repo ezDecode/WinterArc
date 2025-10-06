@@ -54,4 +54,3 @@ export function getStreakColor(streak: number): string {
   if (streak < 7) return 'text-warning'
   return 'text-success'
 }
-
