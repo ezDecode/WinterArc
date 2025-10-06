@@ -1,0 +1,460 @@
+{
+  "product": {
+    "name": "Winter Arc Tracker",
+    "version": "1.0.0",
+    "description": "A 90-day personal habit tracking application with automatic daily resets and comprehensive progress analytics",
+    "duration": "90 days",
+    "target_user": "Individual users committed to personal development during winter season"
+  },
+  "tech_stack": {
+    "framework": "Next.js 15+ (App Router)",
+    "styling": {
+      "primary": "Tailwind CSS v4",
+      "ui_libraries": [
+        "magicui.design",
+        "ui.aceternity.com",
+        "reactbits.dev"
+      ]
+    },
+    "database": "Supabase (PostgreSQL)",
+    "authentication": "Clerk",
+    "fonts": "Inter Tight (100-900 weights)",
+    "design_system": "Monochromatic color scheme",
+    "deployment": "Vercel",
+    "package_manager": "pnpm (recommended)"
+  },
+  "project_structure": {
+    "folders": [
+      "app/",
+      "├── (auth)/",
+      "│   ├── sign-in/[[...sign-in]]/page.tsx",
+      "│   └── sign-up/[[...sign-up]]/page.tsx",
+      "├── (dashboard)/",
+      "│   ├── layout.tsx",
+      "│   ├── today/page.tsx",
+      "│   ├── scorecard/page.tsx",
+      "│   ├── progress/page.tsx",
+      "│   └── review/page.tsx",
+      "├── api/",
+      "│   ├── daily/route.ts",
+      "│   ├── stats/route.ts",
+      "│   ├── reviews/route.ts",
+      "│   └── cron/route.ts",
+      "components/",
+      "├── ui/",
+      "├── tracker/",
+      "├── analytics/",
+      "└── layout/",
+      "lib/",
+      "├── supabase/",
+      "├── utils/",
+      "└── constants/",
+      "types/",
+      "hooks/",
+      "public/"
+    ]
+  },
+  "database_schema": {
+    "tables": {
+      "profiles": {
+        "description": "Extended user profiles linked to Clerk",
+        "columns": {
+          "id": "uuid PRIMARY KEY DEFAULT gen_random_uuid()",
+          "clerk_user_id": "TEXT UNIQUE NOT NULL",
+          "email": "TEXT NOT NULL",
+          "timezone": "TEXT DEFAULT 'Asia/Kolkata'",
+          "arc_start_date": "DATE NOT NULL DEFAULT CURRENT_DATE",
+          "created_at": "TIMESTAMPTZ DEFAULT NOW()",
+          "updated_at": "TIMESTAMPTZ DEFAULT NOW()"
+        }
+      },
+      "daily_entries": {
+        "description": "Core daily habit tracking data",
+        "columns": {
+          "id": "uuid PRIMARY KEY DEFAULT gen_random_uuid()",
+          "user_id": "uuid REFERENCES profiles(id) ON DELETE CASCADE",
+          "entry_date": "DATE NOT NULL",
+          "study_blocks": "JSONB DEFAULT '[]'",
+          "reading": "JSONB DEFAULT '{}'",
+          "pushups": "JSONB DEFAULT '{}'",
+          "meditation": "JSONB DEFAULT '{}'",
+          "water_bottles": "BOOLEAN[] DEFAULT ARRAY[false,false,false,false,false,false,false,false]",
+          "notes": "JSONB DEFAULT '{}'",
+          "daily_score": "INTEGER DEFAULT 0 CHECK (daily_score >= 0 AND daily_score <= 5)",
+          "is_complete": "BOOLEAN DEFAULT false",
+          "created_at": "TIMESTAMPTZ DEFAULT NOW()",
+          "updated_at": "TIMESTAMPTZ DEFAULT NOW()"
+        },
+        "indexes": ["CREATE UNIQUE INDEX ON daily_entries(user_id, entry_date)"]
+      },
+      "weekly_reviews": {
+        "description": "Sunday weekly reflection entries",
+        "columns": {
+          "id": "uuid PRIMARY KEY DEFAULT gen_random_uuid()",
+          "user_id": "uuid REFERENCES profiles(id) ON DELETE CASCADE",
+          "week_number": "INTEGER NOT NULL CHECK (week_number >= 1 AND week_number <= 13)",
+          "review_date": "DATE NOT NULL",
+          "days_hit_all": "INTEGER DEFAULT 0",
+          "what_helped": "TEXT",
+          "what_blocked": "TEXT",
+          "next_week_change": "TEXT",
+          "created_at": "TIMESTAMPTZ DEFAULT NOW()"
+        }
+      },
+      "checkpoint_notes": {
+        "description": "Weekly checkpoint progress notes",
+        "columns": {
+          "id": "uuid PRIMARY KEY DEFAULT gen_random_uuid()",
+          "user_id": "uuid REFERENCES profiles(id) ON DELETE CASCADE",
+          "week_number": "INTEGER NOT NULL CHECK (week_number >= 1 AND week_number <= 13)",
+          "notes": "TEXT",
+          "created_at": "TIMESTAMPTZ DEFAULT NOW()",
+          "updated_at": "TIMESTAMPTZ DEFAULT NOW()"
+        }
+      }
+    },
+    "rls_policies": [
+      "Enable RLS on all tables",
+      "Users can only access their own data",
+      "Automatic user_id injection via Supabase auth"
+    ]
+  },
+  "features": {
+    "core": [
+      {
+        "id": "F001",
+        "name": "Automatic Daily Reset",
+        "priority": "CRITICAL",
+        "description": "Auto-create new daily entry at 4:00 AM user's timezone",
+        "implementation": {
+          "approach": "Vercel Cron Jobs + Edge Functions",
+          "logic": "Check all users, create entries for new day, preserve previous data"
+        }
+      },
+      {
+        "id": "F002",
+        "name": "Daily Habit Tracker",
+        "priority": "CRITICAL",
+        "targets": [
+          {
+            "name": "Study",
+            "requirement": "4 x 1-hour blocks",
+            "ui": "4 checkboxes + text field per block for topic",
+            "scoring": "All 4 blocks = 1 point"
+          },
+          {
+            "name": "Reading",
+            "requirement": "10 pages minimum",
+            "ui": "Single checkbox + book name field",
+            "scoring": "Checked = 1 point"
+          },
+          {
+            "name": "Pushups",
+            "requirement": "50+ total (20+15+15+extras)",
+            "ui": "3 checkboxes for sets + number input for extras",
+            "scoring": "First 3 checkboxes = 1 point"
+          },
+          {
+            "name": "Meditation",
+            "requirement": "10-20 minutes",
+            "ui": "Checkbox + method text field",
+            "scoring": "Checked = 1 point"
+          },
+          {
+            "name": "Water",
+            "requirement": "4L (8 x 500ml)",
+            "ui": "8 bottle checkboxes with visual progress",
+            "scoring": "All 8 = 1 point"
+          }
+        ]
+      },
+      {
+        "id": "F003",
+        "name": "13-Week Habit Scorecard",
+        "priority": "HIGH",
+        "description": "Visual grid showing daily scores for entire 90-day period",
+        "ui": {
+          "layout": "13 rows (weeks) x 7 columns (days) + totals",
+          "color_coding": {
+            "5": "#10b981 (green)",
+            "3-4": "#f59e0b (amber)",
+            "0-2": "#ef4444 (red)",
+            "future": "#6b7280 (gray)"
+          }
+        }
+      },
+      {
+        "id": "F004",
+        "name": "Progress Dashboard",
+        "priority": "HIGH",
+        "metrics": [
+          "Current streak (consecutive 5/5 days)",
+          "Longest streak",
+          "Days completed / 90",
+          "Completion % per target",
+          "Weekly average score",
+          "Trend charts (line + bar)"
+        ]
+      },
+      {
+        "id": "F005",
+        "name": "Weekly Review System",
+        "priority": "MEDIUM",
+        "trigger": "Sunday evenings",
+        "questions": [
+          "Days hit all 5 targets?",
+          "What helped consistency?",
+          "What got in the way?",
+          "One change for next week?"
+        ]
+      }
+    ]
+  },
+  "ui_components": {
+    "required": [
+      {
+        "name": "DailyTrackerCard",
+        "props": ["target", "progress", "onUpdate"],
+        "libraries": ["magicui for animations", "aceternity for glassmorphism"]
+      },
+      {
+        "name": "StreakCounter",
+        "props": ["current", "longest"],
+        "libraries": ["reactbits for number animations"]
+      },
+      {
+        "name": "ScorecardGrid",
+        "props": ["weeks", "scores"],
+        "libraries": ["custom with Tailwind"]
+      },
+      {
+        "name": "ProgressChart",
+        "props": ["data", "type"],
+        "libraries": ["recharts or tremor"]
+      },
+      {
+        "name": "WaterBottles",
+        "props": ["filled", "onToggle"],
+        "libraries": ["custom SVG with animations"]
+      }
+    ]
+  },
+  "api_endpoints": {
+    "daily": [
+      {
+        "method": "GET",
+        "path": "/api/daily/today",
+        "description": "Get or create today's entry",
+        "response": "DailyEntry object"
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/daily/[date]",
+        "description": "Update specific day's data",
+        "body": "Partial DailyEntry",
+        "validation": "Zod schema"
+      },
+      {
+        "method": "GET",
+        "path": "/api/daily/range",
+        "params": "?start=YYYY-MM-DD&end=YYYY-MM-DD",
+        "description": "Get entries for date range"
+      }
+    ],
+    "analytics": [
+      {
+        "method": "GET",
+        "path": "/api/stats/streak",
+        "description": "Calculate current and longest streak"
+      },
+      {
+        "method": "GET",
+        "path": "/api/stats/scorecard",
+        "description": "Get 13-week scorecard data"
+      },
+      {
+        "method": "GET",
+        "path": "/api/stats/dashboard",
+        "description": "All dashboard metrics"
+      }
+    ],
+    "reviews": [
+      {
+        "method": "POST",
+        "path": "/api/reviews",
+        "description": "Create/update weekly review"
+      },
+      {
+        "method": "GET",
+        "path": "/api/reviews/[week]",
+        "description": "Get specific week's review"
+      }
+    ]
+  },
+  "implementation_phases": {
+    "phase_1": {
+      "duration": "2 days",
+      "tasks": [
+        "Setup Next.js with TypeScript",
+        "Configure Tailwind v4",
+        "Integrate Clerk authentication",
+        "Setup Supabase client and types",
+        "Create database schema and RLS policies",
+        "Build basic layout components"
+      ]
+    },
+    "phase_2": {
+      "duration": "3 days",
+      "tasks": [
+        "Implement daily tracker UI components",
+        "Create CRUD operations for daily entries",
+        "Add real-time auto-save functionality",
+        "Build checkbox interactions with animations",
+        "Implement daily score calculation",
+        "Add optimistic updates"
+      ]
+    },
+    "phase_3": {
+      "duration": "2 days",
+      "tasks": [
+        "Create 13-week scorecard grid",
+        "Implement streak calculation logic",
+        "Build progress dashboard with charts",
+        "Add data visualization components",
+        "Create weekly review form"
+      ]
+    },
+    "phase_4": {
+      "duration": "2 days",
+      "tasks": [
+        "Setup Vercel Cron for 4 AM reset",
+        "Implement timezone handling",
+        "Add data export functionality",
+        "Create PWA manifest for mobile",
+        "Add keyboard shortcuts",
+        "Performance optimization"
+      ]
+    },
+    "phase_5": {
+      "duration": "1 day",
+      "tasks": [
+        "Add loading states and skeletons",
+        "Implement error boundaries",
+        "Add toast notifications",
+        "Create onboarding flow",
+        "Write documentation",
+        "Deploy to Vercel"
+      ]
+    }
+  },
+  "ai_tasks": {
+    "immediate": [
+      {
+        "task": "Create Supabase schema SQL",
+        "output": "Complete migration file with tables, indexes, and RLS policies"
+      },
+      {
+        "task": "Generate type definitions",
+        "output": "TypeScript interfaces for all database tables and API responses"
+      },
+      {
+        "task": "Build daily tracker component",
+        "output": "React component with all 5 targets, animations, and state management"
+      }
+    ],
+    "sequential": [
+      {
+        "task": "Implement auto-save hook",
+        "dependencies": ["useDebounce", "Supabase client"],
+        "output": "Custom hook for automatic data persistence"
+      },
+      {
+        "task": "Create streak calculation utility",
+        "input": "Array of daily entries",
+        "output": "Current and longest streak numbers"
+      },
+      {
+        "task": "Build scorecard grid component",
+        "requirements": ["Responsive", "Color-coded", "Clickable cells"],
+        "output": "Reusable grid component with week/day layout"
+      }
+    ]
+  },
+  "design_tokens": {
+    "colors": {
+      "background": "#000000",
+      "surface": "#0a0a0a",
+      "surface_hover": "#141414",
+      "border": "#262626",
+      "text_primary": "#ffffff",
+      "text_secondary": "#a3a3a3",
+      "text_tertiary": "#737373",
+      "accent": "#ffffff",
+      "success": "#10b981",
+      "warning": "#f59e0b",
+      "error": "#ef4444"
+    },
+    "spacing": {
+      "unit": "4px",
+      "scale": [0, 1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 20, 24, 32, 40, 48, 56, 64]
+    },
+    "typography": {
+      "font_family": "'Inter Tight', system-ui, -apple-system, sans-serif",
+      "sizes": ["12px", "14px", "16px", "18px", "20px", "24px", "30px", "36px", "48px"],
+      "weights": [100, 200, 300, 400, 500, 600, 700, 800, 900]
+    },
+    "animations": {
+      "duration": "200ms",
+      "easing": "cubic-bezier(0.4, 0, 0.2, 1)"
+    }
+  },
+  "performance_requirements": {
+    "metrics": [
+      "First Contentful Paint < 1.2s",
+      "Time to Interactive < 2.5s",
+      "Cumulative Layout Shift < 0.1",
+      "Database queries < 100ms",
+      "Auto-save debounce: 500ms",
+      "Offline capability: 24 hours minimum"
+    ]
+  },
+  "testing_checklist": [
+    "Daily reset triggers at 4 AM correctly",
+    "All checkboxes persist state on refresh",
+    "Streak calculation handles gaps correctly",
+    "Scorecard displays accurate colors",
+    "Mobile responsive on all screen sizes",
+    "Clerk auth redirects work properly",
+    "Data exports include all fields",
+    "Timezone conversion works globally"
+  ],
+  "deployment": {
+    "platform": "Vercel",
+    "environment_variables": [
+      "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
+      "CLERK_SECRET_KEY",
+      "NEXT_PUBLIC_SUPABASE_URL",
+      "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+      "SUPABASE_SERVICE_KEY",
+      "CRON_SECRET"
+    ],
+    "domains": [
+      "winterarc.vercel.app",
+      "Custom domain (optional)"
+    ]
+  },
+  "success_metrics": {
+    "technical": [
+      "Zero data loss incidents",
+      "99.9% uptime",
+      "< 1s load time",
+      "< 5% error rate"
+    ],
+    "user": [
+      "Daily active usage > 80%",
+      "90-day completion rate > 30%",
+      "Average session time > 2 minutes",
+      "Mobile usage > 60%"
+    ]
+  }
+}
