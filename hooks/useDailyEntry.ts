@@ -29,9 +29,48 @@ export function useDailyEntry(): UseDailyEntryReturn {
       setError(null)
       
       const response = await fetch('/api/daily/today')
-      
+
       if (!response.ok) {
-        throw new Error('Failed to fetch daily entry')
+        // Try to extract error details
+        let errorMessage = 'Failed to fetch daily entry'
+        try {
+          const body = await response.json()
+          if (body?.error) errorMessage = body.error
+        } catch (_) {
+          // ignore JSON parse errors
+        }
+
+        // If unauthorized, surface a clearer message
+        if (response.status === 401) {
+          throw new Error('Please sign in to continue')
+        }
+
+        // If profile not found, attempt to create it and retry once
+        if (response.status === 404) {
+          try {
+            await fetch('/api/profile')
+          } catch (_) {
+            // ignore
+          }
+
+          const retryResponse = await fetch('/api/daily/today')
+          if (!retryResponse.ok) {
+            let retryMessage = errorMessage
+            try {
+              const retryBody = await retryResponse.json()
+              if (retryBody?.error) retryMessage = retryBody.error
+            } catch (_) {
+              // ignore
+            }
+            throw new Error(retryMessage)
+          }
+
+          const retryData = await retryResponse.json()
+          setEntry(retryData)
+          return
+        }
+
+        throw new Error(errorMessage)
       }
 
       const data = await response.json()
