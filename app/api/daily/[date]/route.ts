@@ -1,6 +1,6 @@
 import { auth } from '@clerk/nextjs/server'
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase/client'
+import { supabaseAdmin } from '@/lib/supabase/server'
 import { calculateDailyScore, isDayComplete } from '@/lib/utils/scoring'
 import type { DailyEntry } from '@/types'
 
@@ -19,7 +19,7 @@ export async function PATCH(
     const updates = await request.json()
 
     // Get user profile
-    const { data: profile, error: profileError } = await supabase
+    const { data: profile, error: profileError } = await supabaseAdmin
       .from('profiles')
       .select('id')
       .eq('clerk_user_id', userId)
@@ -30,7 +30,7 @@ export async function PATCH(
     }
 
     // Get existing entry
-    const { data: existingEntry, error: fetchError } = await supabase
+    const { data: existingEntry, error: fetchError } = await supabaseAdmin
       .from('daily_entries')
       .select('*')
       .eq('user_id', profile.id)
@@ -52,7 +52,7 @@ export async function PATCH(
     const isComplete = isDayComplete(updatedEntry)
 
     // Update entry in database
-    const { data: savedEntry, error: updateError } = await supabase
+    const { data: savedEntry, error: updateError } = await supabaseAdmin
       .from('daily_entries')
       .update({
         ...updates,
@@ -91,7 +91,7 @@ export async function GET(
     const { date } = await params
 
     // Get user profile
-    const { data: profile, error: profileError } = await supabase
+    const { data: profile, error: profileError } = await supabaseAdmin
       .from('profiles')
       .select('id')
       .eq('clerk_user_id', userId)
@@ -102,7 +102,7 @@ export async function GET(
     }
 
     // Get entry for specific date
-    const { data: entry, error: entryError } = await supabase
+    const { data: entry, error: entryError } = await supabaseAdmin
       .from('daily_entries')
       .select('*')
       .eq('user_id', profile.id)

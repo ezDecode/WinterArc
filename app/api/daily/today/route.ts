@@ -1,6 +1,6 @@
 import { auth } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase/client'
+import { supabaseAdmin } from '@/lib/supabase/server'
 import { getTodayDate } from '@/lib/utils/date'
 import type { DailyEntry } from '@/types'
 
@@ -13,7 +13,7 @@ export async function GET() {
     }
 
     // Get user profile
-    const { data: profile, error: profileError } = await supabase
+    const { data: profile, error: profileError } = await supabaseAdmin
       .from('profiles')
       .select('id, timezone, arc_start_date')
       .eq('clerk_user_id', userId)
@@ -27,7 +27,7 @@ export async function GET() {
     const todayDate = getTodayDate(profile.timezone)
 
     // Check if entry exists for today
-    let { data: entry, error: entryError } = await supabase
+    let { data: entry, error: entryError } = await supabaseAdmin
       .from('daily_entries')
       .select('*')
       .eq('user_id', profile.id)
@@ -54,7 +54,7 @@ export async function GET() {
         is_complete: false,
       }
 
-      const { data: newEntry, error: createError } = await supabase
+      const { data: newEntry, error: createError } = await supabaseAdmin
         .from('daily_entries')
         .insert(defaultEntry)
         .select()
