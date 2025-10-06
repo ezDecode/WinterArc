@@ -231,4 +231,3 @@ Once everything is working:
 🎉 **After restart, your app should work perfectly!**
 
 If you still see issues, check the troubleshooting section or refer to `TESTING_GUIDE.md`.
-

@@ -29,48 +29,9 @@ export function useDailyEntry(): UseDailyEntryReturn {
       setError(null)
       
       const response = await fetch('/api/daily/today')
-
+      
       if (!response.ok) {
-        // Try to extract error details
-        let errorMessage = 'Failed to fetch daily entry'
-        try {
-          const body = await response.json()
-          if (body?.error) errorMessage = body.error
-        } catch (_) {
-          // ignore JSON parse errors
-        }
-
-        // If unauthorized, surface a clearer message
-        if (response.status === 401) {
-          throw new Error('Please sign in to continue')
-        }
-
-        // If profile not found, attempt to create it and retry once
-        if (response.status === 404) {
-          try {
-            await fetch('/api/profile')
-          } catch (_) {
-            // ignore
-          }
-
-          const retryResponse = await fetch('/api/daily/today')
-          if (!retryResponse.ok) {
-            let retryMessage = errorMessage
-            try {
-              const retryBody = await retryResponse.json()
-              if (retryBody?.error) retryMessage = retryBody.error
-            } catch (_) {
-              // ignore
-            }
-            throw new Error(retryMessage)
-          }
-
-          const retryData = await retryResponse.json()
-          setEntry(retryData)
-          return
-        }
-
-        throw new Error(errorMessage)
+        throw new Error('Failed to fetch daily entry')
       }
 
       const data = await response.json()
@@ -105,8 +66,8 @@ export function useDailyEntry(): UseDailyEntryReturn {
   }, [])
 
   // Save function for auto-save
-  const saveEntry = useCallback(async (data: DailyEntry) => {
-    if (!data.entry_date) return
+  const saveEntry = useCallback(async (data: DailyEntry | null) => {
+    if (!data || !data.entry_date) return
 
     const response = await fetch(`/api/daily/${data.entry_date}`, {
       method: 'PATCH',
