@@ -10,7 +10,7 @@
     "lint": "next lint",
     "test": "node --import tsx --test __tests__/**/*.test.ts"
   },
-  "packageManager": "pnpm@10.17.1",
+  "packageManager": "npm@latest",
   "dependencies": {
     "@clerk/nextjs": "^6.33.2",
     "@supabase/supabase-js": "^2.58.0",

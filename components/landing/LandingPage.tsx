@@ -59,45 +59,45 @@ export function LandingPage() {
       icon: BookOpen, 
       title: 'Study Tracking', 
       desc: 'Track unlimited study hours with topic notes',
-      color: 'from-purple-500 to-purple-600'
+      color: 'from-purple-600 to-purple-700'
     },
     { 
       icon: Dumbbell, 
       title: 'Fitness Goals', 
       desc: '50 pushups daily split into 3 sets + extras',
-      color: 'from-orange-500 to-red-600'
+      color: 'from-purple-600 to-purple-700'
     },
     { 
       icon: Droplets, 
       title: 'Hydration', 
       desc: 'Monitor 8 bottles (4L) water intake daily',
-      color: 'from-blue-500 to-cyan-600'
+      color: 'from-purple-600 to-purple-700'
     },
     { 
       icon: Brain, 
       title: 'Meditation', 
       desc: 'Track mindfulness sessions and methods',
-      color: 'from-indigo-500 to-blue-600'
+      color: 'from-purple-600 to-purple-700'
     },
     { 
       icon: BookOpen, 
       title: 'Reading', 
       desc: 'Log books and pages read daily',
-      color: 'from-green-500 to-emerald-600'
+      color: 'from-purple-600 to-purple-700'
     },
     { 
       icon: BarChart3, 
       title: 'Analytics', 
       desc: 'Detailed progress charts and insights',
-      color: 'from-pink-500 to-rose-600'
+      color: 'from-purple-600 to-purple-700'
     },
   ]
 
   const steps = [
     {
       number: '01',
-      title: 'Sign Up Free',
-      desc: 'Create your account in seconds. No credit card required.',
+      title: 'Sign Up',
+      desc: 'Create your account in seconds.',
       icon: Users
     },
     {
@@ -154,42 +154,34 @@ export function LandingPage() {
   const faqs = [
     {
       q: 'What is the Winter Arc challenge?',
-      a: 'A 90-day intensive personal development challenge focused on building 5 key daily habits: study, reading, exercise, meditation, and hydration.'
+      a: 'A focused 90-day program to build 5 daily habits: study, reading, exercise, meditation, and hydration.'
     },
     {
-      q: 'Is it really free?',
-      a: 'Yes! Winter Arc is completely free with no hidden costs. We believe everyone deserves access to powerful habit tracking tools.'
+      q: 'How does the $1.99 plan work?',
+      a: 'One simple plan unlocks all features—no tiers, no hidden fees.'
     },
     {
-      q: 'Can I track more than the minimum requirements?',
-      a: 'Absolutely! You can add unlimited study hours, extra pushups, and additional water bottles to track beyond the baseline goals.'
-    },
-    {
-      q: 'What happens after 90 days?',
-      a: 'You can continue using the tracker indefinitely! Many users complete multiple 90-day cycles to maintain their habits.'
-    },
-    {
-      q: 'Do I need any special equipment?',
-      a: 'No! Just yourself and your commitment. All activities can be done at home with minimal to no equipment required.'
+      q: 'Can I track beyond the minimum?',
+      a: 'Yes. Add extra study hours, pushups, and water bottles beyond the baseline goals.'
     },
   ]
 
   return (
     <>
-      <div className="min-h-screen bg-black overflow-x-hidden">
+      <section className="min-h-screen bg-black overflow-x-hidden" aria-label="Landing Page">
         {/* Hero Section */}
         <section className="relative overflow-hidden">
           {/* Animated background */}
-          <div className="absolute inset-0">
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-black to-pink-500/10" />
+          {/* <div className="absolute inset-0">
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-black to-purple-500/10" />
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-purple-900/20 via-black to-black" />
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
-          </div>
+          </div> */}
 
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24">
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-16">
             {/* Badge */}
-            <div className="text-center mb-8 animate-in">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/10 border border-purple-500/20 rounded-full backdrop-blur-sm">
+            <div className="text-center mb-6 animate-in">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-purple-500/10 border border-purple-500/20 rounded-full backdrop-blur-sm transition-all duration-300 ease-out">
                 <Sparkles className="w-4 h-4 text-purple-400" />
                 <span className="text-sm text-purple-300 font-medium">Transform in 90 Days</span>
                 <Sparkles className="w-4 h-4 text-purple-400" />
@@ -197,43 +189,43 @@ export function LandingPage() {
             </div>
             
             {/* Heading */}
-            <h1 className="text-center text-5xl sm:text-6xl lg:text-7xl font-black text-white mb-6 animate-in leading-tight">
+            <h1 className="text-center text-4xl sm:text-5xl lg:text-6xl font-medium text-white mb-4 animate-in leading-tight">
               Your Journey to
-              <span className="block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 animate-gradient">
+              <span className="block mt-1 text-transparent bg-clip-text bg-gradient-to-r from-purple-300 via-purple-400 to-purple-300 animate-gradient">
                 Greatness Starts Here
               </span>
             </h1>
             
             {/* Subheading */}
-            <p className="text-center text-xl text-text-secondary max-w-3xl mx-auto mb-12 animate-in leading-relaxed">
-              Join the <span className="text-purple-400 font-semibold">Winter Arc</span> challenge. Build unbreakable habits, track your progress, and achieve your most ambitious goals in just 90 days.
+            <p className="text-center text-lg text-text-secondary max-w-2xl mx-auto mb-8 animate-in leading-relaxed">
+              Join the <span className="text-purple-400 font-medium">Winter Arc</span> challenge. Build unbreakable habits, track your progress, and achieve your goals in 90 days.
             </p>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16 animate-in">
+            <div className="flex flex-col sm:flex-row gap-3 justify-center items-center mb-12 animate-in">
               <button
                 onClick={() => router.push('/sign-up')}
-                className="group px-10 py-5 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold text-lg rounded-xl hover:shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 hover:scale-105 flex items-center gap-2"
+                className="group px-8 py-4 bg-purple-600 text-white font-medium text-base rounded-xl hover:shadow-xl hover:shadow-purple-500/40 transition-all duration-300 ease-out hover:scale-105 flex items-center gap-2"
               >
-                Start Your Arc Free
+                Get Started — $1.99
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
               <button
                 onClick={() => router.push('/sign-in')}
-                className="px-10 py-5 bg-surface/50 backdrop-blur-sm border-2 border-border text-text-primary font-bold text-lg rounded-xl hover:bg-surface hover:border-purple-500/50 transition-all duration-300"
+                className="px-8 py-4 bg-surface/50 backdrop-blur-sm border border-border text-text-primary font-medium text-base rounded-xl hover:bg-surface hover:border-purple-500/50 transition-all duration-300 ease-out"
               >
                 Sign In
               </button>
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto animate-in">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto animate-in">
               {stats.map((stat, index) => (
                 <div key={index} className="text-center">
-                  <div className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 mb-2">
+                  <div className="text-3xl font-medium text-purple-300 mb-1 transition-colors">
                     {stat.number}
                   </div>
-                  <div className="text-sm text-text-secondary font-medium">
+                  <div className="text-sm text-text-secondary font-normal">
                     {stat.label}
                   </div>
                 </div>
@@ -243,35 +235,35 @@ export function LandingPage() {
         </section>
 
         {/* Features Section */}
-        <section className="relative py-24 bg-gradient-to-b from-black to-surface/20">
+        <section className="relative py-16 bg-gradient-to-b from-black to-surface/20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/10 border border-purple-500/20 rounded-full mb-4">
+            <div className="text-center mb-10">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-purple-500/10 border border-purple-500/20 rounded-full mb-3 transition-all duration-300 ease-out">
                 <Zap className="w-4 h-4 text-purple-400" />
                 <span className="text-sm text-purple-300 font-medium">Powerful Features</span>
               </div>
-              <h2 className="text-4xl sm:text-5xl font-black text-white mb-6">
+              <h2 className="text-3xl sm:text-4xl font-medium text-white mb-4">
                 Everything You Need to Succeed
               </h2>
-              <p className="text-xl text-text-secondary max-w-2xl mx-auto">
+              <p className="text-base text-text-secondary max-w-xl mx-auto">
                 Comprehensive tracking tools designed to keep you motivated and on track every single day.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {features.map((feature, index) => (
                 <div
                   key={index}
-                  className="group bg-surface border border-border rounded-2xl p-8 hover:border-purple-500/50 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/20"
+                  className="group bg-surface border border-border rounded-2xl p-6 hover:border-purple-500/50 transition-all duration-300 ease-out hover:scale-[1.02] hover:shadow-xl hover:shadow-purple-500/10"
                   style={{ animationDelay: `${index * 50}ms` }}
                 >
-                  <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                    <feature.icon className="w-7 h-7 text-white" />
+                  <div className={`w-12 h-12 rounded-xl bg-purple-600/90 flex items-center justify-center mb-5 shadow-md group-hover:scale-110 transition-transform duration-300`}>
+                    <feature.icon className="w-6 h-6 text-white" />
                   </div>
-                  <h3 className="text-xl font-bold text-text-primary mb-3">
+                  <h3 className="text-lg font-medium text-text-primary mb-2">
                     {feature.title}
                   </h3>
-                  <p className="text-text-secondary leading-relaxed">
+                  <p className="text-text-secondary leading-relaxed text-sm">
                     {feature.desc}
                   </p>
                 </div>
@@ -281,38 +273,38 @@ export function LandingPage() {
         </section>
 
         {/* How It Works */}
-        <section className="relative py-24 bg-black">
+        <section className="relative py-16 bg-black">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/10 border border-purple-500/20 rounded-full mb-4">
+            <div className="text-center mb-10">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-purple-500/10 border border-purple-500/20 rounded-full mb-3">
                 <Clock className="w-4 h-4 text-purple-400" />
                 <span className="text-sm text-purple-300 font-medium">Simple Process</span>
               </div>
-              <h2 className="text-4xl sm:text-5xl font-black text-white mb-6">
+              <h2 className="text-3xl sm:text-4xl font-medium text-white mb-4">
                 Get Started in Minutes
               </h2>
-              <p className="text-xl text-text-secondary max-w-2xl mx-auto">
+              <p className="text-base text-text-secondary max-w-xl mx-auto">
                 Four simple steps to begin your transformation journey.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {steps.map((step, index) => (
                 <div key={index} className="relative">
                   {index < steps.length - 1 && (
-                    <div className="hidden lg:block absolute top-16 left-full w-full h-0.5 bg-gradient-to-r from-purple-500/50 to-transparent -translate-x-8" />
+                    <div className="hidden lg:block absolute top-14 left-full w-full h-0.5 bg-gradient-to-r from-purple-500/40 to-transparent -translate-x-8" />
                   )}
-                  <div className="bg-surface border border-border rounded-2xl p-8 hover:border-purple-500/50 transition-all duration-300 h-full">
-                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mb-6 shadow-lg">
-                      <step.icon className="w-7 h-7 text-white" />
+                  <div className="bg-surface border border-border rounded-2xl p-6 hover:border-purple-500/50 transition-all duration-300 ease-out h-full">
+                    <div className="w-12 h-12 rounded-xl bg-purple-600 flex items-center justify-center mb-5 shadow-md">
+                      <step.icon className="w-6 h-6 text-white" />
                     </div>
-                    <div className="text-5xl font-black text-purple-500/20 mb-4">
+                    <div className="text-4xl font-medium text-purple-500/30 mb-3">
                       {step.number}
                     </div>
-                    <h3 className="text-xl font-bold text-text-primary mb-3">
+                    <h3 className="text-lg font-medium text-text-primary mb-2">
                       {step.title}
                     </h3>
-                    <p className="text-text-secondary">
+                    <p className="text-text-secondary text-sm">
                       {step.desc}
                     </p>
                   </div>
@@ -322,72 +314,27 @@ export function LandingPage() {
           </div>
         </section>
 
-        {/* Testimonials */}
-        <section className="relative py-24 bg-gradient-to-b from-surface/20 to-black">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/10 border border-purple-500/20 rounded-full mb-4">
-                <Users className="w-4 h-4 text-purple-400" />
-                <span className="text-sm text-purple-300 font-medium">Success Stories</span>
-              </div>
-              <h2 className="text-4xl sm:text-5xl font-black text-white mb-6">
-                Loved by Thousands
-              </h2>
-              <p className="text-xl text-text-secondary max-w-2xl mx-auto">
-                See what our community has achieved with Winter Arc.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {testimonials.map((testimonial, index) => (
-                <div
-                  key={index}
-                  className={`bg-surface border border-border rounded-2xl p-8 transition-all duration-500 ${
-                    activeTab === index ? 'scale-105 border-purple-500/50 shadow-2xl shadow-purple-500/20' : 'hover:border-purple-500/30'
-                  }`}
-                >
-                  <div className="flex items-center gap-1 mb-4">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                    ))}
-                  </div>
-                  <p className="text-text-primary mb-6 leading-relaxed italic">
-                    "{testimonial.quote}"
-                  </p>
-                  <div className="flex items-center gap-3">
-                    <div className="text-4xl">{testimonial.image}</div>
-                    <div>
-                      <div className="font-bold text-text-primary">{testimonial.name}</div>
-                      <div className="text-sm text-text-secondary">{testimonial.role}</div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
         {/* Pricing */}
-        <section className="relative py-24 bg-black">
+        <section className="relative py-16 bg-black">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/10 border border-purple-500/20 rounded-full mb-4">
+            <div className="text-center mb-10">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-purple-500/10 border border-purple-500/20 rounded-full mb-3">
                 <Shield className="w-4 h-4 text-purple-400" />
                 <span className="text-sm text-purple-300 font-medium">Simple Pricing</span>
               </div>
-              <h2 className="text-4xl sm:text-5xl font-black text-white mb-6">
-                Free Forever
+              <h2 className="text-3xl sm:text-4xl font-medium text-white mb-4">
+                $1.99 Plan
               </h2>
-              <p className="text-xl text-text-secondary max-w-2xl mx-auto">
-                No tricks, no trials. Everything you need to succeed is 100% free.
+              <p className="text-base text-text-secondary max-w-xl mx-auto">
+                Simple, affordable access to everything you need to succeed.
               </p>
             </div>
 
-            <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 border-2 border-purple-500/50 rounded-3xl p-12 text-center backdrop-blur-sm shadow-2xl shadow-purple-500/20">
-              <div className="text-6xl font-black text-white mb-4">$0</div>
-              <div className="text-2xl font-bold text-text-primary mb-8">Forever Free</div>
+            <div className="bg-gradient-to-br from-purple-500/10 to-purple-700/10 border border-purple-500/40 rounded-3xl p-10 text-center backdrop-blur-sm shadow-xl shadow-purple-500/10 transition-all duration-300 ease-out">
+              <div className="text-5xl font-medium text-white mb-2">$1.99</div>
+              <div className="text-lg font-medium text-text-primary mb-6">One Simple Plan</div>
               
-              <ul className="space-y-4 mb-10 text-left max-w-md mx-auto">
+              <ul className="space-y-3 mb-8 text-left max-w-md mx-auto">
                 {[
                   'Unlimited habit tracking',
                   'Real-time auto-save',
@@ -397,32 +344,32 @@ export function LandingPage() {
                   'No ads, ever',
                 ].map((feature, index) => (
                   <li key={index} className="flex items-center gap-3">
-                    <div className="w-6 h-6 rounded-full bg-success/20 flex items-center justify-center flex-shrink-0">
-                      <Check className="w-4 h-4 text-success" />
+                    <div className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center flex-shrink-0">
+                      <Check className="w-4 h-4 text-purple-400" />
                     </div>
-                    <span className="text-text-primary font-medium">{feature}</span>
+                    <span className="text-text-primary font-medium text-sm">{feature}</span>
                   </li>
                 ))}
               </ul>
 
               <button
                 onClick={() => router.push('/sign-up')}
-                className="w-full max-w-md px-10 py-5 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold text-lg rounded-xl hover:shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 hover:scale-105"
+                className="w-full max-w-md px-8 py-4 bg-purple-600 text-white font-medium text-base rounded-xl hover:shadow-xl hover:shadow-purple-500/40 transition-all duration-300 ease-out hover:scale-105"
               >
-                Start Your Journey Free
+                Get Started — $1.99
               </button>
             </div>
           </div>
         </section>
 
         {/* FAQ */}
-        <section className="relative py-24 bg-gradient-to-b from-black to-surface/20">
+        <section className="relative py-16 bg-gradient-to-b from-black to-surface/20">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl sm:text-5xl font-black text-white mb-6">
+            <div className="text-center mb-10">
+              <h2 className="text-3xl sm:text-4xl font-medium text-white mb-4">
                 Frequently Asked Questions
               </h2>
-              <p className="text-xl text-text-secondary">
+              <p className="text-base text-text-secondary">
                 Everything you need to know about Winter Arc.
               </p>
             </div>
@@ -431,13 +378,13 @@ export function LandingPage() {
               {faqs.map((faq, index) => (
                 <details
                   key={index}
-                  className="group bg-surface border border-border rounded-xl p-6 hover:border-purple-500/50 transition-all duration-300"
+                  className="group bg-surface border border-border rounded-xl p-5 hover:border-purple-500/50 transition-all duration-300 ease-out"
                 >
-                  <summary className="flex items-center justify-between cursor-pointer font-bold text-text-primary text-lg">
+                  <summary className="flex items-center justify-between cursor-pointer font-medium text-text-primary text-base">
                     {faq.q}
                     <ChevronRight className="w-5 h-5 text-text-secondary group-open:rotate-90 transition-transform" />
                   </summary>
-                  <p className="mt-4 text-text-secondary leading-relaxed">
+                  <p className="mt-3 text-text-secondary leading-relaxed text-sm">
                     {faq.a}
                   </p>
                 </details>
@@ -447,39 +394,39 @@ export function LandingPage() {
         </section>
 
         {/* Final CTA */}
-        <section className="relative py-32 bg-black overflow-hidden">
-          <div className="absolute inset-0">
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-black to-pink-500/10" />
+        <section className="relative py-20 bg-black overflow-hidden">
+          {/* <div className="absolute inset-0">
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-black to-purple-500/10" />
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-500/20 rounded-full blur-3xl" />
-          </div>
+          </div> */}
           
           <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/10 border border-purple-500/20 rounded-full mb-8">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-purple-500/10 border border-purple-500/20 rounded-full mb-6">
               <Flame className="w-4 h-4 text-purple-400" />
               <span className="text-sm text-purple-300 font-medium">Start Today</span>
             </div>
             
-            <h2 className="text-5xl sm:text-6xl font-black text-white mb-6">
+            <h2 className="text-4xl sm:text-5xl font-medium text-white mb-4">
               Ready to Transform
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-purple-400">
                 Your Life?
               </span>
             </h2>
             
-            <p className="text-xl text-text-secondary mb-12 max-w-2xl mx-auto leading-relaxed">
-              Join thousands of users who are already building better habits and achieving their goals. Your 90-day journey starts now.
+            <p className="text-base text-text-secondary mb-8 max-w-2xl mx-auto leading-relaxed">
+              Join thousands who are already building better habits. Your 90-day journey starts now.
             </p>
 
             <button
               onClick={() => router.push('/sign-up')}
-              className="group px-12 py-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold text-xl rounded-xl hover:shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 hover:scale-110 flex items-center gap-3 mx-auto"
+              className="group px-10 py-5 bg-purple-600 text-white font-medium text-base rounded-xl hover:shadow-xl hover:shadow-purple-500/40 transition-all duration-300 ease-out hover:scale-105 flex items-center gap-3 mx-auto"
             >
-              Start Your Arc Free
+              Start for $1.99
               <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
             </button>
 
-            <p className="text-sm text-text-tertiary mt-8">
-              No credit card required • Get started in 30 seconds
+            <p className="text-sm text-text-tertiary mt-6">
+              Secure checkout • Get started in 30 seconds
             </p>
           </div>
         </section>
@@ -488,8 +435,8 @@ export function LandingPage() {
         <footer className="relative py-12 bg-surface border-t border-border">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
-              <div className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 mb-4">
-                Winter Arc Tracker
+              <div className="text-2xl font-medium text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-purple-400 mb-3">
+                Winter Arc
               </div>
               <p className="text-text-secondary text-sm">
                 Transform your life in 90 days. © 2025 All rights reserved.
@@ -497,7 +444,7 @@ export function LandingPage() {
             </div>
           </div>
         </footer>
-      </div>
+      </section>
 
       {/* Auth Prompt Modal */}
       <AuthPromptModal
