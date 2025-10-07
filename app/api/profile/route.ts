@@ -2,6 +2,7 @@ import { auth, currentUser } from '@clerk/nextjs/server'
 import { NextRequest, NextResponse } from 'next/server'
 import { getOrCreateProfile } from '@/lib/utils/profile'
 import { supabaseAdmin } from '@/lib/supabase/server'
+import { Database } from '@/types/database'
 
 /**
  * GET /api/profile
@@ -66,7 +67,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Update profile
-    const updates: { timezone?: string; updated_at?: string } = {
+    const updates: Database['public']['Tables']['profiles']['Update'] = {
       updated_at: new Date().toISOString(),
     }
 
@@ -74,8 +75,8 @@ export async function PATCH(request: NextRequest) {
       updates.timezone = timezone
     }
 
-    const { data: updatedProfile, error: updateError } = await supabaseAdmin
-      .from('profiles')
+    const { data: updatedProfile, error: updateError } = await (supabaseAdmin
+      .from('profiles') as any)
       .update(updates)
       .eq('clerk_user_id', userId)
       .select()

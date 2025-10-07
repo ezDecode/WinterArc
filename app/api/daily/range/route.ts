@@ -1,6 +1,7 @@
-import { auth } from '@clerk/nextjs/server'
+import { auth, currentUser } from '@clerk/nextjs/server'
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/server'
+import { getOrCreateProfile } from '@/lib/utils/profile'
 import type { DailyEntry } from '@/types'
 
 export async function GET(request: NextRequest) {
@@ -22,19 +23,26 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Get user profile
-    const profileResponse = await supabaseAdmin
-      .from('profiles')
-      .select('id')
-      .eq('clerk_user_id', userId)
-      .single()
-
-    if (profileResponse.error || !profileResponse.data) {
-      return NextResponse.json({ error: 'Profile not found' }, { status: 404 })
+    // Get current user for email
+    const user = await currentUser()
+    
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    // @ts-expect-error - Supabase type narrowing issue
-    const userId_db: string = profileResponse.data.id
+    const email = user.emailAddresses[0]?.emailAddress || 'user@example.com'
+
+    // Get or create user profile
+    const profile = await getOrCreateProfile(userId, email)
+
+    if (!profile) {
+      return NextResponse.json(
+        { error: 'Failed to create profile' },
+        { status: 500 }
+      )
+    }
+
+    const userId_db: string = profile.id
 
     // Get entries for date range
     const { data: entries, error: entriesError } = await supabaseAdmin
