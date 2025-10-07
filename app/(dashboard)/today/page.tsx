@@ -22,6 +22,18 @@ export default function TodayPage() {
     useDailyEntry()
   const [showShortcuts, setShowShortcuts] = useState(false)
 
+  // Keyboard shortcuts - must be called before any conditional returns
+  const shortcuts = useTodayShortcuts(
+    () => {
+      // Manual save trigger (auto-save already handles it)
+      console.log('Save triggered via keyboard')
+    },
+    () => setShowShortcuts(!showShortcuts)
+  )
+
+  useKeyboardShortcuts({ shortcuts })
+
+  // Early returns AFTER all hooks
   if (isLoading) {
     return <SkeletonPage />
   }
@@ -53,17 +65,6 @@ export default function TodayPage() {
   const handleNotesChange = (notes: Notes) => {
     updateEntry({ notes })
   }
-
-  // Keyboard shortcuts
-  const shortcuts = useTodayShortcuts(
-    () => {
-      // Manual save trigger (auto-save already handles it)
-      console.log('Save triggered via keyboard')
-    },
-    () => setShowShortcuts(!showShortcuts)
-  )
-
-  useKeyboardShortcuts({ shortcuts })
 
   return (
     <div className="space-y-6">
