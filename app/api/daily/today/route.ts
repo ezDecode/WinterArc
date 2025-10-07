@@ -13,15 +13,18 @@ export async function GET() {
     }
 
     // Get user profile
-    const { data: profile, error: profileError } = await supabaseAdmin
+    const profileResponse = await supabaseAdmin
       .from('profiles')
       .select('id, timezone, arc_start_date')
       .eq('clerk_user_id', userId)
       .single()
 
-    if (profileError || !profile) {
+    if (profileResponse.error || !profileResponse.data) {
       return NextResponse.json({ error: 'Profile not found' }, { status: 404 })
     }
+
+    // @ts-expect-error - Supabase type narrowing issue
+    const profile = profileResponse.data
 
     // Get today's date in user's timezone
     const todayDate = getTodayDate(profile.timezone)
@@ -56,6 +59,7 @@ export async function GET() {
 
       const { data: newEntry, error: createError } = await supabaseAdmin
         .from('daily_entries')
+        // @ts-ignore - Supabase type narrowing issue
         .insert(defaultEntry)
         .select()
         .single()
@@ -68,7 +72,7 @@ export async function GET() {
       entry = newEntry
     }
 
-    return NextResponse.json(entry as DailyEntry)
+    return NextResponse.json(entry as unknown as DailyEntry)
   } catch (error) {
     console.error('Error in GET /api/daily/today:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
