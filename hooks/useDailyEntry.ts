@@ -88,9 +88,9 @@ export function useDailyEntry(): UseDailyEntryReturn {
       throw new Error('Failed to save entry')
     }
 
-    const savedEntry = await response.json()
-    // Update with server response to ensure sync
-    setEntry(savedEntry)
+    // Don't update state with server response to avoid infinite loop
+    // We already have the correct data from optimistic updates
+    await response.json()
   }, [])
 
   // Auto-save hook
