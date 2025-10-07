@@ -2,6 +2,7 @@
 
 import { TARGETS } from '@/lib/constants/targets'
 import type { StudyBlock } from '@/types'
+import { Plus, Trash2, Clock } from 'lucide-react'
 
 interface StudyBlocksTrackerProps {
   blocks: StudyBlock[]
@@ -21,14 +22,28 @@ export function StudyBlocksTracker({ blocks, onChange }: StudyBlocksTrackerProps
     onChange(newBlocks)
   }
 
-  const allChecked = blocks.every((block) => block.checked)
+  const handleAddBlock = () => {
+    onChange([...blocks, { checked: false, topic: '' }])
+  }
+
+  const handleRemoveBlock = (index: number) => {
+    if (blocks.length <= 1) return // Keep at least 1 block
+    const newBlocks = blocks.filter((_, i) => i !== index)
+    onChange(newBlocks)
+  }
+
   const checkedCount = blocks.filter((block) => block.checked).length
+  const targetCount = Math.max(4, blocks.length)
+  const isTargetMet = checkedCount >= 4
+  const totalHours = blocks.length
 
   return (
     <div className="bg-surface border border-border rounded-lg p-6 animate-in">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-3">
-          <span className="text-2xl">{TARGETS.STUDY.icon}</span>
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-lg shadow-purple-500/30">
+            <span className="text-2xl">{TARGETS.STUDY.icon}</span>
+          </div>
           <div>
             <h3 className="text-lg font-semibold text-text-primary">
               {TARGETS.STUDY.name}
@@ -42,11 +57,32 @@ export function StudyBlocksTracker({ blocks, onChange }: StudyBlocksTrackerProps
           <div className="text-sm text-text-secondary">Progress</div>
           <div
             className={`text-2xl font-bold ${
-              allChecked ? 'text-success' : 'text-text-primary'
+              isTargetMet ? 'text-success' : 'text-text-primary'
             }`}
           >
-            {checkedCount}/4
+            {checkedCount}/{targetCount}
           </div>
+          <div className="text-xs text-text-tertiary mt-1 flex items-center justify-end gap-1">
+            <Clock className="w-3 h-3" />
+            {totalHours}h total
+          </div>
+        </div>
+      </div>
+
+      {/* Progress Bar */}
+      <div className="mb-5">
+        <div className="h-3 bg-background rounded-full overflow-hidden shadow-inner">
+          <div
+            className="h-full bg-gradient-to-r from-purple-500 via-purple-400 to-pink-400 transition-all duration-500 ease-out relative overflow-hidden"
+            style={{ width: `${(checkedCount / targetCount) * 100}%` }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer"></div>
+          </div>
+        </div>
+        <div className="mt-2 text-xs text-right">
+          <span className={`font-medium ${isTargetMet ? 'text-success' : 'text-text-tertiary'}`}>
+            Target: 4 hours minimum
+          </span>
         </div>
       </div>
 
@@ -54,29 +90,71 @@ export function StudyBlocksTracker({ blocks, onChange }: StudyBlocksTrackerProps
         {blocks.map((block, index) => (
           <div
             key={index}
-            className="flex items-center space-x-3 p-3 bg-background rounded-lg border border-border hover:border-text-tertiary transition-colors"
+            className="group relative"
           >
-            <input
-              type="checkbox"
-              checked={block.checked}
-              onChange={(e) => handleCheckboxChange(index, e.target.checked)}
-              className="w-5 h-5 rounded border-border bg-surface text-accent focus:ring-2 focus:ring-accent focus:ring-offset-0 cursor-pointer"
-            />
-            <input
-              type="text"
-              value={block.topic}
-              onChange={(e) => handleTopicChange(index, e.target.value)}
-              placeholder={`Block ${index + 1} topic (e.g., Mathematics)`}
-              className="flex-1 bg-transparent text-text-primary placeholder:text-text-tertiary focus:outline-none"
-            />
-            <span className="text-xs text-text-tertiary">1h</span>
+            <div
+              className={`flex items-center space-x-3 p-4 rounded-xl border-2 transition-all duration-200 ${
+                block.checked
+                  ? 'bg-gradient-to-r from-purple-50/10 to-pink-50/10 border-purple-400/50 shadow-md shadow-purple-500/10'
+                  : 'bg-background border-border hover:border-purple-400/50'
+              }`}
+            >
+              <div className="relative">
+                <input
+                  type="checkbox"
+                  checked={block.checked}
+                  onChange={(e) => handleCheckboxChange(index, e.target.checked)}
+                  className="w-6 h-6 rounded-lg border-2 border-border bg-surface text-purple-500 focus:ring-2 focus:ring-purple-400 focus:ring-offset-0 cursor-pointer transition-all"
+                />
+                {block.checked && (
+                  <div className="absolute inset-0 rounded-lg bg-purple-500/20 animate-ping"></div>
+                )}
+              </div>
+              <input
+                type="text"
+                value={block.topic}
+                onChange={(e) => handleTopicChange(index, e.target.value)}
+                placeholder={`Block ${index + 1} topic (e.g., Mathematics, Programming)`}
+                className="flex-1 bg-transparent text-text-primary placeholder:text-text-tertiary focus:outline-none font-medium"
+              />
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-400/30">
+                  <Clock className="w-3 h-3 text-purple-400" />
+                  <span className="text-xs font-medium text-purple-400">1h</span>
+                </div>
+                {blocks.length > 1 && (
+                  <button
+                    onClick={() => handleRemoveBlock(index)}
+                    className="w-8 h-8 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition-all duration-200 flex items-center justify-center opacity-0 group-hover:opacity-100"
+                    aria-label="Remove block"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
         ))}
+        
+        {/* Add Button */}
+        <button
+          onClick={handleAddBlock}
+          className="w-full p-4 rounded-xl border-2 border-dashed border-border hover:border-purple-400 bg-background hover:bg-purple-50/5 transition-all duration-200 flex items-center justify-center gap-2 group"
+          aria-label="Add study block"
+        >
+          <Plus className="w-5 h-5 text-text-tertiary group-hover:text-purple-400 transition-colors" />
+          <span className="text-sm font-medium text-text-tertiary group-hover:text-purple-400 transition-colors">
+            Add another hour
+          </span>
+        </button>
       </div>
 
-      {allChecked && (
-        <div className="mt-4 text-sm text-success text-center animate-in">
-          ✓ All study blocks completed! +1 point
+      {isTargetMet && (
+        <div className="mt-4 text-sm text-success text-center animate-in flex items-center justify-center gap-2">
+          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+          </svg>
+          <span>Study goal achieved! +1 point</span>
         </div>
       )}
     </div>
