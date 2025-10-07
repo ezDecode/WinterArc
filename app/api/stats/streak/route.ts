@@ -1,25 +1,19 @@
 import { auth } from '@clerk/nextjs/server'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/server'
-import type { DailyEntry } from '@/types'
+import { calculateStreaks } from '@/lib/utils/streak'
+import type { DailyEntry, StreakData } from '@/types'
 
-export async function GET(request: NextRequest) {
+/**
+ * GET /api/stats/streak
+ * Returns current and longest streak data
+ */
+export async function GET() {
   try {
     const { userId } = await auth()
     
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const searchParams = request.nextUrl.searchParams
-    const startDate = searchParams.get('start')
-    const endDate = searchParams.get('end')
-
-    if (!startDate || !endDate) {
-      return NextResponse.json(
-        { error: 'Missing start or end date parameters' },
-        { status: 400 }
-      )
     }
 
     // Get user profile
@@ -34,15 +28,13 @@ export async function GET(request: NextRequest) {
     }
 
     // @ts-expect-error - Supabase type narrowing issue
-    const userId_db: string = profileResponse.data.id
+    const profile = profileResponse.data
 
-    // Get entries for date range
+    // Fetch all daily entries for streak calculation
     const { data: entries, error: entriesError } = await supabaseAdmin
       .from('daily_entries')
-      .select('*')
-      .eq('user_id', userId_db)
-      .gte('entry_date', startDate)
-      .lte('entry_date', endDate)
+      .select('entry_date, daily_score')
+      .eq('user_id', profile.id)
       .order('entry_date', { ascending: true })
 
     if (entriesError) {
@@ -50,9 +42,12 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to fetch entries' }, { status: 500 })
     }
 
-    return NextResponse.json(entries as DailyEntry[])
+    // Calculate streaks using utility function
+    const streakData = calculateStreaks(entries as DailyEntry[])
+    
+    return NextResponse.json(streakData as StreakData)
   } catch (error) {
-    console.error('Error in GET /api/daily/range:', error)
+    console.error('Error in GET /api/stats/streak:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

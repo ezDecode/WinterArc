@@ -27,6 +27,7 @@ export async function getOrCreateProfile(
     // Create new profile
     const { data: newProfile, error: createError } = await supabase
       .from('profiles')
+      // @ts-ignore - Supabase type narrowing issue
       .insert({
         clerk_user_id: clerkUserId,
         email,
