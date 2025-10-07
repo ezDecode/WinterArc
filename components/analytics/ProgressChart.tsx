@@ -1,5 +1,6 @@
 'use client'
 
+import { memo } from 'react'
 import {
   LineChart,
   Line,
@@ -23,7 +24,7 @@ interface ProgressChartProps {
   type?: 'line' | 'bar'
 }
 
-export function ProgressChart({ trendData, type = 'line' }: ProgressChartProps) {
+export const ProgressChart = memo(function ProgressChart({ trendData, type = 'line' }: ProgressChartProps) {
   // Format date for display
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr)
@@ -124,4 +125,4 @@ export function ProgressChart({ trendData, type = 'line' }: ProgressChartProps) 
       </ResponsiveContainer>
     </div>
   )
-}
+})

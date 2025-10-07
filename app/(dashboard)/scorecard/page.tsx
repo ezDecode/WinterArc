@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { SkeletonScorecard } from '@/components/ui/Skeleton'
 import type { ScorecardData } from '@/types'
 
 export default function ScorecardPage() {
@@ -52,20 +53,7 @@ export default function ScorecardPage() {
             Visual overview of your entire 90-day journey
           </p>
         </div>
-        <div className="bg-surface border border-border rounded-lg p-8">
-          <div className="animate-pulse space-y-4">
-            <div className="h-8 bg-background rounded w-1/4 mx-auto"></div>
-            <div className="grid grid-cols-8 gap-2">
-              {[...Array(13)].map((_, i) => (
-                <div key={i} className="col-span-8 flex gap-2">
-                  {[...Array(8)].map((_, j) => (
-                    <div key={j} className="h-12 bg-background rounded flex-1"></div>
-                  ))}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+        <SkeletonScorecard />
       </div>
     )
   }

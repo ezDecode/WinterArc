@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { toast } from 'sonner'
 import { useDebounce } from './useDebounce'
 
 interface UseAutoSaveOptions<T> {
@@ -6,6 +7,7 @@ interface UseAutoSaveOptions<T> {
   onSave: (data: T) => Promise<void>
   delay?: number
   enabled?: boolean
+  showToast?: boolean
 }
 
 interface UseAutoSaveReturn {
@@ -24,6 +26,7 @@ export function useAutoSave<T>({
   onSave,
   delay = 500,
   enabled = true,
+  showToast = false,
 }: UseAutoSaveOptions<T>): UseAutoSaveReturn {
   const [isSaving, setIsSaving] = useState(false)
   const [lastSaved, setLastSaved] = useState<Date | null>(null)
@@ -51,16 +54,29 @@ export function useAutoSave<T>({
         setError(null)
         await onSave(debouncedData)
         setLastSaved(new Date())
+        
+        // Show success toast if enabled
+        if (showToast) {
+          toast.success('Changes saved successfully', {
+            duration: 2000,
+          })
+        }
       } catch (err) {
         console.error('Auto-save error:', err)
-        setError(err instanceof Error ? err.message : 'Failed to save')
+        const errorMessage = err instanceof Error ? err.message : 'Failed to save'
+        setError(errorMessage)
+        
+        // Always show error toast
+        toast.error(errorMessage, {
+          duration: 4000,
+        })
       } finally {
         setIsSaving(false)
       }
     }
 
     saveData()
-  }, [debouncedData, enabled, onSave])
+  }, [debouncedData, enabled, onSave, showToast])
 
   return {
     isSaving,

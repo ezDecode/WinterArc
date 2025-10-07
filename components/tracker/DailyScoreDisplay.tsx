@@ -1,5 +1,6 @@
 'use client'
 
+import { memo } from 'react'
 import { DAILY_MAX_SCORE, SCORE_COLORS } from '@/lib/constants/targets'
 
 interface DailyScoreDisplayProps {
@@ -7,7 +8,7 @@ interface DailyScoreDisplayProps {
   isComplete: boolean
 }
 
-export function DailyScoreDisplay({
+export const DailyScoreDisplay = memo(function DailyScoreDisplay({
   score,
   isComplete,
 }: DailyScoreDisplayProps) {
@@ -88,4 +89,4 @@ export function DailyScoreDisplay({
       )}
     </div>
   )
-}
+})
