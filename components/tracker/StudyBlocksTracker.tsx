@@ -2,7 +2,7 @@
 
 import { TARGETS } from '@/lib/constants/targets'
 import type { StudyBlock } from '@/types'
-import { Plus, Trash2, Clock } from 'lucide-react'
+import { Plus, Trash2, Clock, Check } from 'lucide-react'
 
 interface StudyBlocksTrackerProps {
   blocks: StudyBlock[]
@@ -99,17 +99,31 @@ export function StudyBlocksTracker({ blocks, onChange }: StudyBlocksTrackerProps
                   : 'bg-background border-border hover:border-purple-400/50'
               }`}
             >
-              <div className="relative">
-                <input
-                  type="checkbox"
-                  checked={block.checked}
-                  onChange={(e) => handleCheckboxChange(index, e.target.checked)}
-                  className="w-6 h-6 rounded-lg border-2 border-border bg-surface text-purple-500 focus:ring-2 focus:ring-purple-400 focus:ring-offset-0 cursor-pointer transition-all"
-                />
+              {/* Custom Checkbox */}
+              <button
+                onClick={() => handleCheckboxChange(index, !block.checked)}
+                className="relative flex-shrink-0 group/checkbox"
+                aria-label={`Toggle block ${index + 1}`}
+              >
+                <div
+                  className={`w-7 h-7 rounded-lg border-2 transition-all duration-300 flex items-center justify-center ${
+                    block.checked
+                      ? 'bg-gradient-to-br from-purple-500 to-pink-500 border-purple-400 shadow-lg shadow-purple-500/50'
+                      : 'bg-surface border-border group-hover/checkbox:border-purple-400 group-hover/checkbox:bg-purple-500/5'
+                  }`}
+                >
+                  {block.checked && (
+                    <Check 
+                      className="w-5 h-5 text-white stroke-[3] animate-in" 
+                      style={{ animationDuration: '200ms' }}
+                    />
+                  )}
+                </div>
                 {block.checked && (
-                  <div className="absolute inset-0 rounded-lg bg-purple-500/20 animate-ping"></div>
+                  <div className="absolute inset-0 rounded-lg bg-purple-500/30 animate-ping pointer-events-none"></div>
                 )}
-              </div>
+              </button>
+
               <input
                 type="text"
                 value={block.topic}
