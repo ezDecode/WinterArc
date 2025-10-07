@@ -37,7 +37,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" className={interTight.variable}>
-        <body className="min-h-screen">
+        <body className="min-h-screen font-sans">
           <ServiceWorkerRegistration />
           <Toaster 
             position="bottom-right" 
