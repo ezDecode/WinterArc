@@ -1,9 +1,19 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import dynamic from 'next/dynamic'
 import { StreakCounter } from '@/components/analytics/StreakCounter'
-import { ProgressChart } from '@/components/analytics/ProgressChart'
+import { SkeletonStats, SkeletonChart } from '@/components/ui/Skeleton'
 import type { DashboardStats } from '@/types'
+
+// Dynamic import for chart to reduce initial bundle size
+const ProgressChart = dynamic(
+  () => import('@/components/analytics/ProgressChart').then(mod => ({ default: mod.ProgressChart })),
+  {
+    loading: () => <SkeletonChart />,
+    ssr: false
+  }
+)
 
 type DashboardData = DashboardStats & {
   trendData: Array<{ date: string; score: number }>
@@ -42,18 +52,8 @@ export default function ProgressPage() {
             Track your streaks, completion rates, and trends
           </p>
         </div>
-        <div className="animate-pulse space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="h-32 bg-surface rounded-lg"></div>
-            <div className="h-32 bg-surface rounded-lg"></div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="h-24 bg-surface rounded-lg"></div>
-            ))}
-          </div>
-          <div className="h-64 bg-surface rounded-lg"></div>
-        </div>
+        <SkeletonStats />
+        <SkeletonChart />
       </div>
     )
   }

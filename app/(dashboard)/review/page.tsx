@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
+import { SkeletonCard } from '@/components/ui/Skeleton'
 import type { WeeklyReview } from '@/types'
 
 export default function ReviewPage() {
@@ -103,9 +105,14 @@ export default function ReviewPage() {
       })
 
       setSuccessMessage('Weekly review saved successfully!')
+      toast.success('Weekly review saved successfully!', {
+        description: `Week ${currentWeek} - ${formData.days_hit_all}/7 perfect days`,
+      })
       setTimeout(() => setSuccessMessage(null), 3000)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save review')
+      const errorMessage = err instanceof Error ? err.message : 'Failed to save review'
+      setError(errorMessage)
+      toast.error(errorMessage)
     } finally {
       setSaving(false)
     }
@@ -145,7 +152,7 @@ export default function ReviewPage() {
             Reflect on your week and plan improvements
           </p>
         </div>
-        <div className="animate-pulse bg-surface border border-border rounded-lg p-8 h-96"></div>
+        <SkeletonCard />
       </div>
     )
   }

@@ -25,6 +25,68 @@ export function getTodayDate(timezone: string = 'Asia/Kolkata'): string {
 }
 
 /**
+ * Get user's local date in their timezone (alias for getTodayDate for clarity)
+ */
+export function getUserTodayLocalDate(timezone: string): string {
+  return getTodayDate(timezone)
+}
+
+/**
+ * Check if current time is user's local 4 AM (within 1 hour window)
+ * Used for determining when to create new daily entries
+ */
+export function isUserLocalFourAM(now: Date, timezone: string): boolean {
+  const options: Intl.DateTimeFormatOptions = {
+    timeZone: timezone,
+    hour: 'numeric',
+    hour12: false,
+  }
+  const userHour = parseInt(new Intl.DateTimeFormat('en-US', options).format(now))
+  return userHour === 4
+}
+
+/**
+ * Get current hour in user's timezone
+ */
+export function getUserLocalHour(timezone: string): number {
+  const now = new Date()
+  const options: Intl.DateTimeFormatOptions = {
+    timeZone: timezone,
+    hour: 'numeric',
+    hour12: false,
+  }
+  return parseInt(new Intl.DateTimeFormat('en-US', options).format(now))
+}
+
+/**
+ * Get current time in user's timezone as Date object
+ */
+export function getUserLocalTime(timezone: string): Date {
+  const now = new Date()
+  const options: Intl.DateTimeFormatOptions = {
+    timeZone: timezone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  }
+  const formatter = new Intl.DateTimeFormat('en-US', options)
+  const parts = formatter.formatToParts(now)
+  
+  const year = parseInt(parts.find(p => p.type === 'year')?.value || '0')
+  const month = parseInt(parts.find(p => p.type === 'month')?.value || '0') - 1
+  const day = parseInt(parts.find(p => p.type === 'day')?.value || '0')
+  const hour = parseInt(parts.find(p => p.type === 'hour')?.value || '0')
+  const minute = parseInt(parts.find(p => p.type === 'minute')?.value || '0')
+  const second = parseInt(parts.find(p => p.type === 'second')?.value || '0')
+  
+  return new Date(year, month, day, hour, minute, second)
+}
+
+/**
  * Calculate week number within the 90-day arc (1-13)
  */
 export function getWeekNumber(startDate: Date, currentDate: Date): number {

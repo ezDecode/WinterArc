@@ -1,6 +1,8 @@
 'use client'
 
+import { useState } from 'react'
 import { useDailyEntry } from '@/hooks/useDailyEntry'
+import { useKeyboardShortcuts, useTodayShortcuts } from '@/hooks/useKeyboardShortcuts'
 import { StudyBlocksTracker } from '@/components/tracker/StudyBlocksTracker'
 import { ReadingTracker } from '@/components/tracker/ReadingTracker'
 import { PushupsTracker } from '@/components/tracker/PushupsTracker'
@@ -11,14 +13,17 @@ import { NotesSection } from '@/components/tracker/NotesSection'
 import { SaveStatus } from '@/components/ui/SaveStatus'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { ErrorMessage } from '@/components/ui/ErrorMessage'
+import { KeyboardShortcutsModal } from '@/components/ui/KeyboardShortcutsModal'
+import { SkeletonPage } from '@/components/ui/Skeleton'
 import type { StudyBlock, Reading, Pushups, Meditation, Notes } from '@/types'
 
 export default function TodayPage() {
   const { entry, isLoading, error, updateEntry, refreshEntry, isSaving, lastSaved } =
     useDailyEntry()
+  const [showShortcuts, setShowShortcuts] = useState(false)
 
   if (isLoading) {
-    return <LoadingSpinner />
+    return <SkeletonPage />
   }
 
   if (error || !entry) {
@@ -49,8 +54,26 @@ export default function TodayPage() {
     updateEntry({ notes })
   }
 
+  // Keyboard shortcuts
+  const shortcuts = useTodayShortcuts(
+    () => {
+      // Manual save trigger (auto-save already handles it)
+      console.log('Save triggered via keyboard')
+    },
+    () => setShowShortcuts(!showShortcuts)
+  )
+
+  useKeyboardShortcuts({ shortcuts })
+
   return (
     <div className="space-y-6">
+      {/* Keyboard Shortcuts Modal */}
+      <KeyboardShortcutsModal
+        isOpen={showShortcuts}
+        onClose={() => setShowShortcuts(false)}
+        shortcuts={shortcuts}
+      />
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -58,8 +81,15 @@ export default function TodayPage() {
           <p className="text-text-secondary mt-1">
             Track your daily habits and reach 5/5 points
           </p>
-          <div className="mt-2">
+          <div className="mt-2 flex items-center gap-4">
             <SaveStatus isSaving={isSaving} lastSaved={lastSaved} error={null} />
+            <button
+              onClick={() => setShowShortcuts(true)}
+              className="text-sm text-text-secondary hover:text-text-primary transition-colors"
+              title="Keyboard shortcuts"
+            >
+              Press <kbd className="px-2 py-1 text-xs font-mono bg-surface-light border border-border-subtle rounded">?</kbd> for shortcuts
+            </button>
           </div>
         </div>
         <div className="text-right">
