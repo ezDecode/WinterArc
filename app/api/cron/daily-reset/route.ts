@@ -1,36 +1,66 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { timingSafeEqual } from 'crypto'
 import type { Database } from '@/types/database'
 import type { Profile } from '@/types'
 import { getUserTodayLocalDate } from '@/lib/utils/date'
+import { createDefaultDailyEntry } from '@/lib/utils/typeConverters'
 
 /**
  * Vercel Cron Job Handler for Daily Reset
  * 
  * This endpoint creates new daily entries for all active users at their local 4 AM.
- * Security: Requires CRON_SECRET in Authorization header
+ * Security: Requires CRON_SECRET in Authorization header with constant-time comparison
  * 
  * POST /api/cron/daily-reset
  */
+
+/**
+ * Validate cron request with constant-time comparison to prevent timing attacks
+ */
+function isValidCronRequest(request: NextRequest): boolean {
+  const authHeader = request.headers.get('authorization')
+  const cronSecret = process.env.CRON_SECRET
+
+  if (!cronSecret) {
+    console.error('CRON_SECRET not configured')
+    return false
+  }
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return false
+  }
+
+  const token = authHeader.slice(7) // Remove 'Bearer '
+
+  try {
+    const tokenBuffer = Buffer.from(token)
+    const secretBuffer = Buffer.from(cronSecret)
+
+    // Constant-time comparison to prevent timing attacks
+    if (tokenBuffer.length !== secretBuffer.length) {
+      return false
+    }
+
+    return timingSafeEqual(tokenBuffer, secretBuffer)
+  } catch {
+    return false
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
-    // Security: Verify cron secret
-    const authHeader = request.headers.get('authorization')
-    const cronSecret = process.env.CRON_SECRET
-    
-    if (!cronSecret) {
-      console.error('CRON_SECRET not configured')
+    // Security: Verify cron secret with constant-time comparison
+    if (!isValidCronRequest(request)) {
+      console.error('Invalid cron authentication')
       return NextResponse.json(
-        { error: 'Server configuration error' },
-        { status: 500 }
-      )
-    }
-    
-    const expectedAuth = `Bearer ${cronSecret}`
-    if (authHeader !== expectedAuth) {
-      console.error('Invalid or missing authorization header for cron job')
-      return NextResponse.json(
-        { error: 'Unauthorized' },
+        {
+          error: {
+            code: 'AUTH_ERROR',
+            message: 'Unauthorized',
+            timestamp: new Date().toISOString(),
+          },
+        },
         { status: 401 }
       )
     }
@@ -113,28 +143,12 @@ export async function POST(request: NextRequest) {
           continue
         }
 
-        // Create new daily entry with defaults
-        const entryData: Database['public']['Tables']['daily_entries']['Insert'] = {
-          user_id: profile.id,
-          entry_date: todayDate,
-          study_blocks: [
-            { checked: false, topic: '' },
-            { checked: false, topic: '' },
-            { checked: false, topic: '' },
-            { checked: false, topic: '' }
-          ],
-          reading: { checked: false, bookName: '', pages: 0 },
-          pushups: { set1: false, set2: false, set3: false, extras: 0 },
-          meditation: { checked: false, method: '', duration: 0 },
-          water_bottles: [false, false, false, false, false, false, false, false],
-          notes: { morning: '', evening: '', general: '' },
-          daily_score: 0,
-          is_complete: false
-        }
-        
-        const { error: insertError } = await supabase
-          .from('daily_entries')
-          .insert(entryData as any)
+        // Create new daily entry with defaults using type converter
+        const entryData = createDefaultDailyEntry(profile.id, todayDate)
+
+        const { error: insertError } = await (supabase
+          .from('daily_entries') as any)
+          .insert(entryData)
         if (insertError) {
           console.error(`Error creating entry for user ${profile.id}:`, insertError)
           errors++

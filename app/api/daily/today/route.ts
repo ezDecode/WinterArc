@@ -3,40 +3,35 @@ import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/server'
 import { getTodayDate } from '@/lib/utils/date'
 import { getOrCreateProfile } from '@/lib/utils/profile'
+import { createDefaultDailyEntry, fromDatabaseDailyEntry } from '@/lib/utils/typeConverters'
+import { handleApiError } from '@/lib/errors/errorHandler'
+import { AuthenticationError, NotFoundError, DatabaseError } from '@/lib/errors/AppError'
 import type { DailyEntry } from '@/types'
 import type { Database } from '@/types/database'
 
 export async function GET() {
   try {
     const { userId } = await auth()
-    
+
     if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      throw new AuthenticationError()
     }
 
     // Get current user for email
     const user = await currentUser()
-    
+
     if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+      throw new NotFoundError('User')
     }
 
-    const email = user.emailAddresses[0]?.emailAddress || 'user@example.com'
+    const email = user.emailAddresses[0]?.emailAddress
+
+    if (!email) {
+      throw new DatabaseError('User email not found')
+    }
 
     // Get or create user profile
-    let profile
-    try {
-      profile = await getOrCreateProfile(userId, email)
-    } catch (profileError) {
-      console.error('Error in getOrCreateProfile:', profileError)
-      return NextResponse.json(
-        { 
-          error: 'Failed to fetch or create profile',
-          details: profileError instanceof Error ? profileError.message : 'Unknown error'
-        },
-        { status: 500 }
-      )
-    }
+    const profile = await getOrCreateProfile(userId, email)
 
     // Get today's date in user's timezone
     const todayDate = getTodayDate(profile.timezone)
@@ -51,23 +46,8 @@ export async function GET() {
 
     // If no entry exists, create one
     if (entryError || !entry) {
-      const defaultEntry: Database['public']['Tables']['daily_entries']['Insert'] = {
-        user_id: profile.id,
-        entry_date: todayDate,
-        study_blocks: [
-          { checked: false, topic: '' },
-          { checked: false, topic: '' },
-          { checked: false, topic: '' },
-          { checked: false, topic: '' },
-        ],
-        reading: { checked: false, bookName: '', pages: 0 },
-        pushups: { set1: false, set2: false, set3: false, extras: 0 },
-        meditation: { checked: false, method: '', duration: 0 },
-        water_bottles: [false, false, false, false, false, false, false, false],
-        notes: { morning: '', evening: '', general: '' },
-        daily_score: 0,
-        is_complete: false,
-      }
+      // Use type converter to create default entry (no 'as any')
+      const defaultEntry = createDefaultDailyEntry(profile.id, todayDate)
 
       const { data: newEntry, error: createError } = await (supabaseAdmin
         .from('daily_entries') as any)
@@ -76,28 +56,23 @@ export async function GET() {
         .single()
 
       if (createError) {
-        console.error('Error creating entry:', createError)
-        return NextResponse.json(
-          { 
-            error: 'Failed to create entry',
-            details: createError.message
-          },
-          { status: 500 }
-        )
+        throw new DatabaseError('Failed to create entry', createError)
+      }
+
+      if (!newEntry) {
+        throw new DatabaseError('Failed to create entry: No data returned')
       }
 
       entry = newEntry
     }
 
-    return NextResponse.json(entry as unknown as DailyEntry)
+    // Convert database entry to DailyEntry type
+    if (entry) {
+      return NextResponse.json(fromDatabaseDailyEntry(entry))
+    } else {
+      throw new DatabaseError('Entry not found')
+    }
   } catch (error) {
-    console.error('Error in GET /api/daily/today:', error)
-    return NextResponse.json(
-      { 
-        error: 'Internal server error',
-        details: error instanceof Error ? error.message : 'Unknown error'
-      },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }
