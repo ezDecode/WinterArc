@@ -4,6 +4,7 @@ import { supabaseAdmin } from '@/lib/supabase/server'
 import { getTodayDate } from '@/lib/utils/date'
 import { getOrCreateProfile } from '@/lib/utils/profile'
 import type { DailyEntry } from '@/types'
+import type { Database } from '@/types/database'
 
 export async function GET() {
   try {
@@ -23,11 +24,16 @@ export async function GET() {
     const email = user.emailAddresses[0]?.emailAddress || 'user@example.com'
 
     // Get or create user profile
-    const profile = await getOrCreateProfile(userId, email)
-
-    if (!profile) {
+    let profile
+    try {
+      profile = await getOrCreateProfile(userId, email)
+    } catch (profileError) {
+      console.error('Error in getOrCreateProfile:', profileError)
       return NextResponse.json(
-        { error: 'Failed to create profile' },
+        { 
+          error: 'Failed to fetch or create profile',
+          details: profileError instanceof Error ? profileError.message : 'Unknown error'
+        },
         { status: 500 }
       )
     }
@@ -45,7 +51,7 @@ export async function GET() {
 
     // If no entry exists, create one
     if (entryError || !entry) {
-      const defaultEntry = {
+      const defaultEntry: Database['public']['Tables']['daily_entries']['Insert'] = {
         user_id: profile.id,
         entry_date: todayDate,
         study_blocks: [
@@ -65,14 +71,19 @@ export async function GET() {
 
       const { data: newEntry, error: createError } = await supabaseAdmin
         .from('daily_entries')
-        // @ts-ignore - Supabase type narrowing issue
         .insert(defaultEntry)
         .select()
         .single()
 
       if (createError) {
         console.error('Error creating entry:', createError)
-        return NextResponse.json({ error: 'Failed to create entry' }, { status: 500 })
+        return NextResponse.json(
+          { 
+            error: 'Failed to create entry',
+            details: createError.message
+          },
+          { status: 500 }
+        )
       }
 
       entry = newEntry
@@ -81,6 +92,12 @@ export async function GET() {
     return NextResponse.json(entry as unknown as DailyEntry)
   } catch (error) {
     console.error('Error in GET /api/daily/today:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json(
+      { 
+        error: 'Internal server error',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
+      { status: 500 }
+    )
   }
 }

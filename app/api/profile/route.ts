@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getOrCreateProfile } from '@/lib/utils/profile'
 import { supabaseAdmin } from '@/lib/supabase/server'
 import { Database } from '@/types/database'
+import { z } from 'zod'
 
 /**
  * GET /api/profile
@@ -24,21 +25,35 @@ export async function GET() {
 
     const email = user.emailAddresses[0]?.emailAddress || 'user@example.com'
     
-    const profile = await getOrCreateProfile(userId, email)
-
-    if (!profile) {
+    try {
+      const profile = await getOrCreateProfile(userId, email)
+      return NextResponse.json(profile)
+    } catch (profileError) {
+      console.error('Error in getOrCreateProfile:', profileError)
       return NextResponse.json(
-        { error: 'Failed to create profile' },
+        { 
+          error: 'Failed to fetch or create profile',
+          details: profileError instanceof Error ? profileError.message : 'Unknown error'
+        },
         { status: 500 }
       )
     }
-
-    return NextResponse.json(profile)
   } catch (error) {
     console.error('Error in GET /api/profile:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json(
+      { 
+        error: 'Internal server error',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
+      { status: 500 }
+    )
   }
 }
+
+// Validation schema for profile updates
+const profileUpdateSchema = z.object({
+  timezone: z.string().optional(),
+})
 
 /**
  * PATCH /api/profile
@@ -53,7 +68,21 @@ export async function PATCH(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { timezone } = body
+    
+    // Validate input
+    const validationResult = profileUpdateSchema.safeParse(body)
+    
+    if (!validationResult.success) {
+      return NextResponse.json(
+        { 
+          error: 'Invalid request data',
+          details: validationResult.error.issues
+        },
+        { status: 400 }
+      )
+    }
+
+    const { timezone } = validationResult.data
 
     // Get user's profile
     const { data: profile, error: fetchError } = await supabaseAdmin
@@ -75,8 +104,8 @@ export async function PATCH(request: NextRequest) {
       updates.timezone = timezone
     }
 
-    const { data: updatedProfile, error: updateError } = await (supabaseAdmin
-      .from('profiles') as any)
+    const { data: updatedProfile, error: updateError } = await supabaseAdmin
+      .from('profiles')
       .update(updates)
       .eq('clerk_user_id', userId)
       .select()
@@ -84,12 +113,24 @@ export async function PATCH(request: NextRequest) {
 
     if (updateError) {
       console.error('Error updating profile:', updateError)
-      return NextResponse.json({ error: 'Failed to update profile' }, { status: 500 })
+      return NextResponse.json(
+        { 
+          error: 'Failed to update profile',
+          details: updateError.message
+        },
+        { status: 500 }
+      )
     }
 
     return NextResponse.json(updatedProfile)
   } catch (error) {
     console.error('Error in PATCH /api/profile:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json(
+      { 
+        error: 'Internal server error',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
+      { status: 500 }
+    )
   }
 }
