@@ -140,10 +140,10 @@ export function LandingPage() {
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
           </div> */}
 
-          <div className="relative max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 pt-12 sm:pt-16 pb-12 sm:pb-16">
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 pb-16 sm:pb-20">
             {/* Badge */}
-            <div className="text-center mb-4 sm:mb-6 animate-in">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-purple-500/10 border border-purple-500/20 rounded-full backdrop-blur-sm transition-all duration-300 ease-out">
+            <div className="text-center mb-6 sm:mb-8 animate-in">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/10 border border-purple-500/20 rounded-full backdrop-blur-sm transition-all duration-300 ease-out shadow-lg shadow-purple-500/10">
                 <Sparkles className="w-4 h-4 text-purple-400" />
                 <span className="text-xs sm:text-sm text-purple-300 font-medium">Transform in 90 Days</span>
                 <Sparkles className="w-4 h-4 text-purple-400" />
@@ -151,7 +151,7 @@ export function LandingPage() {
             </div>
             
             {/* Heading */}
-            <h1 className="text-center text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-medium text-white mb-4 animate-in leading-tight">
+            <h1 className="text-center text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-medium text-white mb-6 sm:mb-8 animate-in leading-tight">
               Your Journey to
               <span className="block mt-1 text-transparent bg-clip-text bg-gradient-to-r from-purple-300 via-purple-400 to-purple-300 animate-gradient">
                 Greatness Starts Here
@@ -159,15 +159,15 @@ export function LandingPage() {
             </h1>
             
             {/* Subheading */}
-            <p className="text-center text-base sm:text-lg text-text-secondary max-w-2xl mx-auto mb-6 sm:mb-8 animate-in leading-relaxed">
+            <p className="text-center text-base sm:text-lg text-text-secondary max-w-2xl mx-auto mb-8 sm:mb-10 animate-in leading-relaxed px-4">
               Join the <span className="text-purple-400 font-medium">Winter Arc</span> challenge. Build unbreakable habits, track your progress, and achieve your goals in 90 days.
             </p>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3 justify-center items-center mb-8 sm:mb-12 animate-in">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-10 sm:mb-14 animate-in px-4">
               <button
                 onClick={() => router.push('/sign-up')}
-                className="group px-6 sm:px-8 py-3 sm:py-4 bg-purple-600 text-white font-medium text-sm sm:text-base rounded-xl hover:shadow-xl hover:shadow-purple-500/40 transition-all duration-300 ease-out hover:scale-105 focus:outline-none   focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-black flex items-center gap-2 w-full sm:w-auto justify-center min-h-[48px] relative overflow-hidden"
+                className="group px-8 sm:px-10 py-4 sm:py-5 bg-purple-600 text-white font-medium text-base sm:text-lg rounded-xl hover:shadow-xl hover:shadow-purple-500/40 transition-all duration-300 ease-out hover:scale-105 focus:outline-none   focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-black flex items-center gap-2 w-full sm:w-auto justify-center min-h-[52px] sm:min-h-[56px] relative overflow-hidden shadow-lg"
                 aria-label="Get started with Winter Arc for $1.99"
               >
                 <span className="relative z-10">Get Started — $1.99</span>
@@ -176,7 +176,7 @@ export function LandingPage() {
               </button>
               <button
                 onClick={() => router.push('/sign-in')}
-                className="px-6 sm:px-8 py-3 sm:py-4 bg-surface/50 backdrop-blur-sm border border-border text-text-primary font-medium text-sm sm:text-base rounded-xl hover:bg-surface hover:border-purple-500/50 transition-all duration-300 ease-out focus:outline-none   focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-black w-full sm:w-auto justify-center min-h-[48px]"
+                className="px-8 sm:px-10 py-4 sm:py-5 bg-surface/50 backdrop-blur-sm border border-border text-text-primary font-medium text-base sm:text-lg rounded-xl hover:bg-surface hover:border-purple-500/50 hover:shadow-lg transition-all duration-300 ease-out focus:outline-none   focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-black w-full sm:w-auto justify-center min-h-[52px] sm:min-h-[56px] shadow-md"
                 aria-label="Sign in to your Winter Arc account"
               >
                 Sign In
@@ -184,7 +184,7 @@ export function LandingPage() {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 max-w-3xl mx-auto animate-in">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 max-w-4xl mx-auto animate-in px-4">
               {stats.map((stat, index) => (
                 <div key={index} className="text-center">
                   <div className="text-2xl sm:text-3xl font-medium text-purple-300 mb-1 transition-colors">

@@ -161,7 +161,7 @@ export default function ReviewPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 sm:space-y-8">
       <div>
         <h1 className="text-3xl font-bold text-text-primary">Weekly Review</h1>
         <p className="text-text-secondary mt-1">
@@ -170,8 +170,9 @@ export default function ReviewPage() {
       </div>
 
       {/* Week Selector */}
-      <div className="flex items-center gap-2 flex-wrap">
-        <span className="text-sm text-text-secondary mr-2">Week:</span>
+      <div className="bg-surface/30 rounded-xl p-4 sm:p-5 backdrop-blur-sm">
+        <div className="flex items-center gap-3 flex-wrap">
+          <span className="text-sm font-medium text-text-secondary">Week:</span>
         {[...Array(13)].map((_, i) => {
           const weekNum = i + 1
           const hasReview = reviews.some(r => r.week_number === weekNum)
@@ -182,9 +183,9 @@ export default function ReviewPage() {
               key={weekNum}
               onClick={() => loadWeekReview(weekNum)}
               className={`
-                px-3 py-1.5 rounded-md text-sm font-medium transition-all
+                px-4 py-2.5 rounded-lg text-sm font-medium transition-all min-h-[44px] min-w-[52px] shadow-sm hover:shadow-md
                 ${isSelected 
-                  ? 'bg-accent text-background' 
+                  ? 'bg-accent text-background shadow-lg shadow-accent/20' 
                   : hasReview
                     ? 'bg-success/20 text-success border border-success/30 hover:bg-success/30'
                     : 'bg-surface text-text-secondary border border-border hover:bg-surface-hover'
@@ -194,12 +195,13 @@ export default function ReviewPage() {
               W{weekNum}
             </button>
           )
-        })}
+          })}
+        </div>
       </div>
 
       {/* Review Form */}
-      <form onSubmit={handleSubmit} className="bg-surface border border-border rounded-lg p-6 md:p-8">
-        <div className="space-y-6">
+      <form onSubmit={handleSubmit} className="bg-surface border border-border rounded-xl p-5 sm:p-6 md:p-8 shadow-sm hover:shadow-md transition-all duration-300">
+        <div className="space-y-6 sm:space-y-8">
           <div>
             <h2 className="text-xl font-semibold text-text-primary mb-4">
               Week {currentWeek} Review
@@ -211,16 +213,16 @@ export default function ReviewPage() {
             <label className="block text-sm font-medium text-text-primary">
               How many days did you hit all 5 targets this week?
             </label>
-            <div className="flex gap-2">
+            <div className="flex gap-2 sm:gap-3 flex-wrap">
               {[0, 1, 2, 3, 4, 5, 6, 7].map((num) => (
                 <button
                   key={num}
                   type="button"
                   onClick={() => handleInputChange('days_hit_all', num)}
                   className={`
-                    px-4 py-2 rounded-md font-semibold transition-all
+                    px-4 py-3 rounded-lg font-semibold transition-all min-h-[48px] min-w-[48px] shadow-sm hover:shadow-md
                     ${formData.days_hit_all === num
-                      ? 'bg-success text-white'
+                      ? 'bg-success text-white shadow-lg shadow-success/20'
                       : 'bg-background text-text-secondary border border-border hover:bg-surface'
                     }
                   `}
@@ -242,7 +244,7 @@ export default function ReviewPage() {
               onChange={(e) => handleInputChange('what_helped', e.target.value)}
               rows={4}
               placeholder="Reflect on what strategies, habits, or circumstances helped you succeed..."
-              className="w-full bg-background border border-border rounded-lg p-4 text-text-primary placeholder:text-text-tertiary focus:outline-none   focus:ring-accent/50 resize-none"
+              className="w-full bg-background border border-border rounded-lg p-4 sm:p-5 text-text-primary placeholder:text-text-tertiary focus:outline-none   focus:ring-accent/50 resize-none shadow-sm focus:shadow-md transition-all duration-200"
             />
           </div>
 
@@ -257,7 +259,7 @@ export default function ReviewPage() {
               onChange={(e) => handleInputChange('what_blocked', e.target.value)}
               rows={4}
               placeholder="Identify obstacles, challenges, or patterns that hindered your consistency..."
-              className="w-full bg-background border border-border rounded-lg p-4 text-text-primary placeholder:text-text-tertiary focus:outline-none   focus:ring-accent/50 resize-none"
+              className="w-full bg-background border border-border rounded-lg p-4 sm:p-5 text-text-primary placeholder:text-text-tertiary focus:outline-none   focus:ring-accent/50 resize-none shadow-sm focus:shadow-md transition-all duration-200"
             />
           </div>
 
@@ -272,7 +274,7 @@ export default function ReviewPage() {
               onChange={(e) => handleInputChange('next_week_change', e.target.value)}
               rows={4}
               placeholder="Commit to one specific change or adjustment for better results..."
-              className="w-full bg-background border border-border rounded-lg p-4 text-text-primary placeholder:text-text-tertiary focus:outline-none   focus:ring-accent/50 resize-none"
+              className="w-full bg-background border border-border rounded-lg p-4 sm:p-5 text-text-primary placeholder:text-text-tertiary focus:outline-none   focus:ring-accent/50 resize-none shadow-sm focus:shadow-md transition-all duration-200"
             />
           </div>
 
@@ -293,7 +295,7 @@ export default function ReviewPage() {
           <button
             type="submit"
             disabled={saving}
-            className="w-full bg-accent text-background font-semibold py-3 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-accent text-background font-semibold py-4 sm:py-5 rounded-lg hover:opacity-90 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed min-h-[52px] shadow-lg hover:shadow-xl"
           >
             {saving ? 'Saving...' : 'Save Review'}
           </button>
@@ -302,16 +304,16 @@ export default function ReviewPage() {
 
       {/* Previous Reviews Summary */}
       {reviews.length > 0 && (
-        <div className="bg-surface border border-border rounded-lg p-6">
+        <div className="bg-surface border border-border rounded-xl p-5 sm:p-6 shadow-sm hover:shadow-md transition-all duration-300">
           <h3 className="text-lg font-semibold text-text-primary mb-4">
             Review History
           </h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
             {reviews.map((review) => (
               <button
                 key={review.id}
                 onClick={() => loadWeekReview(review.week_number)}
-                className="bg-background border border-border rounded-lg p-4 hover:bg-surface transition-colors text-left"
+                className="bg-background border border-border rounded-lg p-4 sm:p-5 hover:bg-surface transition-all duration-200 text-left shadow-sm hover:shadow-md min-h-[72px] flex flex-col justify-center"
               >
                 <div className="text-xs text-text-secondary">Week {review.week_number}</div>
                 <div className="text-2xl font-bold text-success mt-1">

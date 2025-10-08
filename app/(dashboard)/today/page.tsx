@@ -69,7 +69,7 @@ export default function TodayPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 sm:space-y-8">
       {/* Keyboard Shortcuts Modal */}
       <KeyboardShortcutsModal
         isOpen={showShortcuts}
@@ -78,26 +78,28 @@ export default function TodayPage() {
       />
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-6">
         <div className="flex-1">
           <h1 className="text-2xl sm:text-3xl font-bold text-text-primary">Today&apos;s Tracker</h1>
           <p className="text-sm sm:text-base text-text-secondary mt-1">
             Track your daily habits and reach 5/5 points
           </p>
-          <div className="mt-2 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+          <div className="mt-3 sm:mt-2 flex flex-col xs:flex-row xs:items-center gap-3 sm:gap-4">
             <SaveStatus isSaving={isSaving} lastSaved={lastSaved} error={null} />
             <button
               onClick={() => setShowShortcuts(true)}
-              className="text-xs sm:text-sm text-text-secondary hover:text-text-primary transition-colors self-start"
+              className="text-xs sm:text-sm text-text-secondary hover:text-text-primary transition-colors self-start xs:self-auto bg-surface/50 hover:bg-surface border border-border rounded-lg px-3 py-2 min-h-[44px] flex items-center gap-2"
               title="Keyboard shortcuts"
             >
-              Press <kbd className="px-2 py-1 text-xs font-mono bg-surface border border-border rounded">?</kbd> for shortcuts
+              <span>Press</span>
+              <kbd className="px-2 py-1 text-xs font-mono bg-background border border-border rounded">?</kbd>
+              <span>for shortcuts</span>
             </button>
           </div>
         </div>
-        <div className="text-left sm:text-right">
-          <div className="text-xs sm:text-sm text-text-secondary">Date</div>
-          <div className="text-base sm:text-lg font-medium text-text-primary">
+        <div className="text-center sm:text-right bg-surface/50 rounded-lg p-3 sm:p-4 border border-border/50 backdrop-blur-sm">
+          <div className="text-xs sm:text-sm text-text-secondary font-medium">Date</div>
+          <div className="text-base sm:text-lg font-semibold text-text-primary mt-1">
             {new Date(entry.entry_date).toLocaleDateString('en-US', {
               weekday: 'short',
               month: 'short',
@@ -108,9 +110,9 @@ export default function TodayPage() {
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 sm:gap-8">
         {/* Left Column - Trackers */}
-        <div className="xl:col-span-2 space-y-4 sm:space-y-6">
+        <div className="xl:col-span-2 space-y-6 sm:space-y-8">
           <StudyBlocksTracker
             blocks={entry.study_blocks as StudyBlock[]}
             onChange={handleStudyBlocksChange}
@@ -144,7 +146,7 @@ export default function TodayPage() {
 
         {/* Right Column - Score Display */}
         <div className="xl:col-span-1">
-          <div className="sticky top-20 sm:top-24">
+          <div className="sticky top-24 sm:top-28">
             <DailyScoreDisplay
               score={entry.daily_score}
               isComplete={entry.is_complete}
