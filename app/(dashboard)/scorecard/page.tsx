@@ -143,7 +143,7 @@ export default function ScorecardPage() {
                     className={`
                       aspect-square rounded-lg border transition-all duration-200
                       flex items-center justify-center min-h-[36px] sm:min-h-[44px]
-                      ${getScoreColor(day.score, day.isFuture)} hover:scale-105
+                      ${getScoreColor(day.score, day.isFuture)}
                     `}
                     onClick={(e) => day.isFuture && e.preventDefault()}
                   >

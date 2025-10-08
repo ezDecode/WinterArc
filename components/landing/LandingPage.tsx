@@ -167,7 +167,7 @@ export function LandingPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-10 sm:mb-14 animate-in px-4">
               <button
                 onClick={() => router.push('/sign-up')}
-                className="group px-8 sm:px-10 py-4 sm:py-5 bg-purple-600 text-white font-medium text-base sm:text-lg rounded-xl hover:shadow-xl hover:shadow-purple-500/40 transition-all duration-300 ease-out hover:scale-105 focus:outline-none   focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-black flex items-center gap-2 w-full sm:w-auto justify-center min-h-[52px] sm:min-h-[56px] relative overflow-hidden shadow-lg"
+                className="group px-8 sm:px-10 py-4 sm:py-5 bg-purple-600 text-white font-medium text-base sm:text-lg rounded-xl hover:shadow-xl hover:shadow-purple-500/40 transition-all duration-300 ease-out focus:outline-none   focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-black flex items-center gap-2 w-full sm:w-auto justify-center min-h-[52px] sm:min-h-[56px] relative overflow-hidden shadow-lg"
                 aria-label="Get started with Winter Arc for $1.99"
               >
                 <span className="relative z-10">Get Started — $1.99</span>
@@ -219,10 +219,10 @@ export function LandingPage() {
               {features.map((feature, index) => (
                 <div
                   key={index}
-                  className="group bg-surface border border-border rounded-2xl p-6 hover:border-purple-500/50 transition-all duration-300 ease-out hover:scale-[1.02] hover:shadow-xl hover:shadow-purple-500/10"
+                  className="group bg-surface border border-border rounded-2xl p-6 hover:border-purple-500/50 transition-all duration-300 ease-out hover:shadow-xl hover:shadow-purple-500/10"
                   style={{ animationDelay: `${index * 50}ms` }}
                 >
-                  <div className={`w-12 h-12 rounded-xl bg-purple-600/90 flex items-center justify-center mb-5 shadow-md group-hover:scale-110 transition-transform duration-300`}>
+                  <div className={`w-12 h-12 rounded-xl bg-purple-600/90 flex items-center justify-center mb-5 shadow-md transition-transform duration-300`}>
                     <feature.icon className="w-6 h-6 text-white" />
                   </div>
                   <h3 className="text-lg font-medium text-text-primary mb-2">
@@ -319,7 +319,7 @@ export function LandingPage() {
 
               <button
                 onClick={() => router.push('/sign-up')}
-                className="w-full max-w-md px-8 py-4 bg-purple-600 text-white font-medium text-base rounded-xl hover:shadow-xl hover:shadow-purple-500/40 transition-all duration-300 ease-out hover:scale-105"
+                className="w-full max-w-md px-8 py-4 bg-purple-600 text-white font-medium text-base rounded-xl hover:shadow-xl hover:shadow-purple-500/40 transition-all duration-300 ease-out"
               >
                 Get Started — $1.99
               </button>
@@ -384,7 +384,7 @@ export function LandingPage() {
 
             <button
               onClick={() => router.push('/sign-up')}
-              className="group px-10 py-5 bg-purple-600 text-white font-medium text-base rounded-xl hover:shadow-xl hover:shadow-purple-500/40 transition-all duration-300 ease-out hover:scale-105 flex items-center gap-3 mx-auto"
+              className="group px-10 py-5 bg-purple-600 text-white font-medium text-base rounded-xl hover:shadow-xl hover:shadow-purple-500/40 transition-all duration-300 ease-out flex items-center gap-3 mx-auto"
             >
               Start for $1.99
               <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />

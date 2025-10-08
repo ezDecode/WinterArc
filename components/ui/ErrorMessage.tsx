@@ -68,7 +68,7 @@ export function ErrorMessage({
           {onRetry && (
             <button
               onClick={onRetry}
-              className="group inline-flex items-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-xl font-medium hover:bg-purple-700 focus:outline-none     transition-all duration-200 hover:scale-105"
+              className="group inline-flex items-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-xl font-medium hover:bg-purple-700 focus:outline-none     transition-all duration-200"
               aria-describedby="error-title error-message"
             >
               <RefreshCw className="w-4 h-4 group-hover:rotate-180 transition-transform duration-500" />

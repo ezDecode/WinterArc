@@ -87,7 +87,7 @@ export function WaterBottlesTracker({
           <div key={index} className="relative group">
             <button
               onClick={() => handleBottleToggle(index)}
-              className={`w-full aspect-square rounded-xl border-2 transition-all duration-200 hover:scale-105 min-h-[44px] ${
+              className={`w-full aspect-square rounded-xl border-2 transition-all duration-200 min-h-[44px] ${
                 filled
                   ? 'bg-gradient-to-br from-blue-500 to-blue-600 border-blue-400 shadow-lg shadow-blue-500/50'
                   : 'bg-background border-border hover:border-blue-400 hover:bg-blue-50/5'
@@ -128,7 +128,7 @@ export function WaterBottlesTracker({
         {/* Add Button */}
         <button
           onClick={handleAddBottle}
-          className="w-full aspect-square rounded-xl border-2 border-dashed border-border hover:border-blue-400 bg-background hover:bg-blue-50/5 transition-all duration-200 hover:scale-105 flex items-center justify-center group min-h-[44px]"
+          className="w-full aspect-square rounded-xl border-2 border-dashed border-border hover:border-blue-400 bg-background hover:bg-blue-50/5 transition-all duration-200 flex items-center justify-center group min-h-[44px]"
           aria-label="Add bottle"
         >
           <Plus className="w-5 h-5 sm:w-6 sm:h-6 text-text-tertiary group-hover:text-blue-400 transition-colors" />
