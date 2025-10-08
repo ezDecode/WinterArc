@@ -55,21 +55,25 @@ export async function PATCH(request: NextRequest) {
       throw new AuthenticationError()
     }
 
+    const user = await currentUser()
+
+    if (!user) {
+      throw new NotFoundError('User')
+    }
+
+    const email = user.emailAddresses[0]?.emailAddress
+
+    if (!email) {
+      throw new DatabaseError('User email not found')
+    }
+
     const body = await request.json()
 
     // Validate input (will be caught by handleApiError if it fails)
     const { timezone } = profileUpdateSchema.parse(body)
 
-    // Get user's profile
-    const { data: profile, error: fetchError } = await supabaseAdmin
-      .from('profiles')
-      .select('*')
-      .eq('clerk_user_id', userId)
-      .single()
-
-    if (fetchError || !profile) {
-      throw new NotFoundError('Profile')
-    }
+    // Get or create user's profile (handles first-time users)
+    const profile = await getOrCreateProfile(userId, email)
 
     // Update profile
     const updates: Database['public']['Tables']['profiles']['Update'] = {
@@ -83,7 +87,7 @@ export async function PATCH(request: NextRequest) {
     const { data: updatedProfile, error: updateError } = await (supabaseAdmin
       .from('profiles') as any) // eslint-disable-line @typescript-eslint/no-explicit-any
       .update(updates)
-      .eq('clerk_user_id', userId)
+      .eq('id', profile.id)
       .select()
       .single()
 
