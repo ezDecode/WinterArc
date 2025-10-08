@@ -9,8 +9,19 @@ import { Resend } from 'resend'
 import { createClient } from '@supabase/supabase-js'
 import type { Database } from '@/types/database'
 
-// Initialize Resend client
-const resend = new Resend(process.env.RESEND_API_KEY)
+// Lazy initialize Resend client to avoid build-time errors
+let resendClient: Resend | null = null
+
+function getResendClient(): Resend {
+  if (!resendClient) {
+    const apiKey = process.env.RESEND_API_KEY
+    if (!apiKey) {
+      throw new Error('RESEND_API_KEY environment variable is not set')
+    }
+    resendClient = new Resend(apiKey)
+  }
+  return resendClient
+}
 
 // Create Supabase admin client for service operations
 function getSupabaseServiceClient() {
@@ -285,6 +296,7 @@ async function sendReminderEmail(data: EmailReminderData): Promise<EmailResult> 
     const html = generateEmailHTML(data.userName, data.incompleteTasks)
     const text = generateEmailText(data.userName, data.incompleteTasks)
 
+    const resend = getResendClient()
     const { data: result, error } = await resend.emails.send({
       from: `${EMAIL_CONFIG.FROM_NAME} <${EMAIL_CONFIG.FROM_EMAIL}>`,
       to: [data.email],

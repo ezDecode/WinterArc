@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { ReactNode, useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import { Menu, X, Home, BarChart3, TrendingUp, Calendar } from 'lucide-react'
+import { AnimatedTabs } from '@/components/ui/AnimatedTabs'
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -66,7 +67,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             {/* Logo */}
             <Link 
               href="/today" 
-              className="flex items-center space-x-2 focus:outline-none   focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-black rounded-lg px-2 py-1 -mx-2 -my-1"
+              className="flex items-center space-x-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-black rounded-lg px-2 py-1 -mx-2 -my-1"
               aria-label="Winter Arc - Home"
             >
               <span className="text-lg sm:text-xl lg:text-2xl font-bold text-text-primary">
@@ -74,18 +75,12 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               </span>
             </Link>
 
-            {/* Navigation Links - Desktop */}
-            <div className="hidden md:flex items-center space-x-1">
-              {navigationItems.map((item) => (
-                <NavLink 
-                  key={item.href} 
-                  href={item.href} 
-                  isActive={pathname === item.href}
-                  icon={item.icon}
-                >
-                  {item.label}
-                </NavLink>
-              ))}
+            {/* Animated Navigation Tabs - Desktop */}
+            <div className="hidden md:block">
+              <AnimatedTabs 
+                tabs={navigationItems} 
+                activeTab={pathname}
+              />
             </div>
 
             {/* Mobile Menu Button & User Menu */}
@@ -93,7 +88,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               {/* Mobile Menu Button */}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="md:hidden p-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-hover transition-all duration-200 focus:outline-none   focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-black"
+                className="md:hidden p-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-hover transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-black"
                 aria-expanded={isMobileMenuOpen}
                 aria-label="Toggle navigation menu"
               >
@@ -115,7 +110,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               <UserButton 
                 appearance={{
                   elements: {
-                    avatarBox: 'w-8 h-8 sm:w-9 sm:h-9 focus:outline-none   focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-black',
+                    avatarBox: 'w-8 h-8 sm:w-9 sm:h-9 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-black',
                   },
                 }}
               />
@@ -141,14 +136,14 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         <div className="flex items-center justify-between p-4 border-b border-border">
           <Link 
             href="/today" 
-            className="text-xl font-bold text-text-primary focus:outline-none     rounded-lg px-2 py-1 -mx-2 -my-1"
+            className="text-xl font-bold text-text-primary focus:outline-none focus:ring-2 focus:ring-purple-500 rounded-lg px-2 py-1 -mx-2 -my-1"
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Winter Arc
           </Link>
           <button
             onClick={() => setIsMobileMenuOpen(false)}
-            className="p-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-hover transition-colors focus:outline-none    "
+            className="p-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-hover transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500"
             aria-label="Close navigation menu"
           >
             <X className="w-5 h-5" />
@@ -191,33 +186,6 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   )
 }
 
-function NavLink({ 
-  href, 
-  children, 
-  isActive, 
-  icon: Icon 
-}: { 
-  href: string
-  children: ReactNode
-  isActive?: boolean
-  icon?: React.ElementType
-}) {
-  return (
-    <Link
-      href={href}
-      className={`px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap min-h-[44px] flex items-center gap-2 focus:outline-none   focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-black ${
-        isActive 
-          ? 'text-text-primary bg-surface-hover border border-border' 
-          : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'
-      }`}
-      aria-current={isActive ? 'page' : undefined}
-    >
-      {Icon && <Icon className="w-4 h-4" />}
-      {children}
-    </Link>
-  )
-}
-
 function MobileNavLink({ 
   href, 
   children, 
@@ -234,7 +202,7 @@ function MobileNavLink({
   return (
     <Link
       href={href}
-      className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 min-h-[52px] focus:outline-none     animate-in slide-in-from-left-5 ${
+      className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 min-h-[52px] focus:outline-none focus:ring-2 focus:ring-purple-500 animate-in slide-in-from-left-5 ${
         isActive 
           ? 'text-text-primary bg-surface-hover border border-border shadow-sm' 
           : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'
