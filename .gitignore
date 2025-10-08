@@ -29,6 +29,10 @@ yarn-error.log*
 .env*.local
 .env
 
+# database migrations and schema files
+lib/supabase/*.sql
+*.sql
+
 # vercel
 .vercel
 
