@@ -1,5 +1,9 @@
 import { supabaseAdmin } from '@/lib/supabase/server'
 import { DEFAULT_TIMEZONE } from '@/lib/constants/targets'
+import type { Database } from '@/types/database'
+
+type ProfileRow = Database['public']['Tables']['profiles']['Row']
+type ProfileInsert = Database['public']['Tables']['profiles']['Insert']
 
 /**
  * Get or create user profile for Clerk user (Server-side version)
@@ -10,10 +14,10 @@ import { DEFAULT_TIMEZONE } from '@/lib/constants/targets'
 export async function getOrCreateProfile(
   clerkUserId: string,
   email: string
-): Promise<{ id: string; clerk_user_id: string; email: string; timezone: string; arc_start_date: string } | null> {
+): Promise<ProfileRow | null> {
   try {
     // Check if profile exists
-    let { data: profile, error: fetchError } = await supabaseAdmin
+    const { data: profile, error: fetchError } = await supabaseAdmin
       .from('profiles')
       .select('*')
       .eq('clerk_user_id', clerkUserId)
@@ -24,16 +28,18 @@ export async function getOrCreateProfile(
       return profile
     }
 
-    // Create new profile
+    // Profile doesn't exist, create new one
+    const newProfileData: ProfileInsert = {
+      clerk_user_id: clerkUserId,
+      email: email,
+      timezone: DEFAULT_TIMEZONE,
+      arc_start_date: new Date().toISOString().split('T')[0],
+    }
+
     const { data: newProfile, error: createError } = await supabaseAdmin
       .from('profiles')
       // @ts-ignore - Supabase type narrowing issue
-      .insert({
-        clerk_user_id: clerkUserId,
-        email,
-        timezone: DEFAULT_TIMEZONE,
-        arc_start_date: new Date().toISOString().split('T')[0],
-      })
+      .insert(newProfileData)
       .select()
       .single()
 

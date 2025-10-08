@@ -4,6 +4,7 @@ import type { Database } from '@/types/database'
 import { getUserTodayLocalDate } from '@/lib/utils/date'
 
 type Profile = Database['public']['Tables']['profiles']['Row']
+type DailyEntryInsert = Database['public']['Tables']['daily_entries']['Insert']
 
 /**
  * Vercel Cron Job Handler for Daily Reset
@@ -68,7 +69,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const profiles = profilesData || []
+    const profiles: Profile[] = profilesData || []
 
     if (profiles.length === 0) {
       return NextResponse.json({
@@ -90,21 +91,20 @@ export async function POST(request: NextRequest) {
     for (const profile of profiles) {
       try {
         processedUsers++
-        // Type assertion needed due to TypeScript inference issue with Supabase types
-        const userTimezone = (profile as any).timezone || defaultTimezone
+        const userTimezone = profile.timezone || defaultTimezone
         const todayDate = getUserTodayLocalDate(userTimezone)
 
         // Check if entry already exists for today
         const { data: existingEntry, error: checkError } = await supabase
           .from('daily_entries')
           .select('id')
-          .eq('user_id', (profile as any).id)
+          .eq('user_id', profile.id)
           .eq('entry_date', todayDate)
           .single()
 
         if (checkError && checkError.code !== 'PGRST116') {
           // PGRST116 is "no rows returned" - that's expected
-          console.error(`Error checking entry for user ${(profile as any).id}:`, checkError)
+          console.error(`Error checking entry for user ${profile.id}:`, checkError)
           errors++
           continue
         }
@@ -116,35 +116,38 @@ export async function POST(request: NextRequest) {
         }
 
         // Create new daily entry with defaults
-        const { error: insertError } = await (supabase as any)
+        const newEntry: DailyEntryInsert = {
+          user_id: profile.id,
+          entry_date: todayDate,
+          study_blocks: [
+            { checked: false, topic: '' },
+            { checked: false, topic: '' },
+            { checked: false, topic: '' },
+            { checked: false, topic: '' }
+          ],
+          reading: { checked: false, bookName: '', pages: 0 },
+          pushups: { set1: false, set2: false, set3: false, extras: 0 },
+          meditation: { checked: false, method: '', duration: 0 },
+          water_bottles: [false, false, false, false, false, false, false, false],
+          notes: { morning: '', evening: '', general: '' },
+          daily_score: 0,
+          is_complete: false
+        }
+
+        const { error: insertError } = await supabase
           .from('daily_entries')
-          .insert({
-            user_id: (profile as any).id,
-            entry_date: todayDate,
-            study_blocks: [
-              { checked: false, topic: '' },
-              { checked: false, topic: '' },
-              { checked: false, topic: '' },
-              { checked: false, topic: '' }
-            ],
-            reading: { checked: false, bookName: '', pages: 0 },
-            pushups: { set1: false, set2: false, set3: false, extras: 0 },
-            meditation: { checked: false, method: '', duration: 0 },
-            water_bottles: [false, false, false, false, false, false, false, false],
-            notes: { morning: '', evening: '', general: '' },
-            daily_score: 0,
-            is_complete: false
-          })
+          // @ts-ignore - Supabase type narrowing issue
+          .insert(newEntry)
 
         if (insertError) {
-          console.error(`Error creating entry for user ${(profile as any).id}:`, insertError)
+          console.error(`Error creating entry for user ${profile.id}:`, insertError)
           errors++
           continue
         }
 
         createdEntries++
       } catch (userError) {
-        console.error(`Error processing user ${(profile as any).id}:`, userError)
+        console.error(`Error processing user ${profile.id}:`, userError)
         errors++
       }
     }
