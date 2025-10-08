@@ -1,6 +1,7 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { triggerEmailCheckOnTodayVisit, updateUserLastLogin } from '@/lib/services/emailTrigger'
 
 const isPublicRoute = createRouteMatcher([
   '/',
@@ -103,6 +104,18 @@ export default clerkMiddleware(async (auth, request) => {
   if (userId && request.nextUrl.pathname === '/') {
     // Redirect home page to /today
     return NextResponse.redirect(new URL('/today', request.url))
+  }
+
+  // Handle /today page visits for authenticated users
+  if (userId && request.nextUrl.pathname === '/today') {
+    // Update user's last login timestamp (fire and forget)
+    updateUserLastLogin(userId).catch(() => {
+      // Suppress errors to prevent affecting user experience
+    })
+    
+    // Trigger email reminder check (fire and forget)
+    // This will check if user has incomplete tasks and send reminder if eligible
+    triggerEmailCheckOnTodayVisit(userId)
   }
 
   return NextResponse.next()

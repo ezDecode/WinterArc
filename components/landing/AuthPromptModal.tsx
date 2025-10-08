@@ -111,7 +111,7 @@ export function AuthPromptModal({ isOpen, onClose }: AuthPromptModalProps) {
           <div className="space-y-3">
             <button
               onClick={() => router.push('/sign-up')}
-              className="w-full py-3 px-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-purple-500/50 transition-all duration-200 hover:scale-105"
+              className="w-full py-3 px-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-purple-500/50 transition-all duration-200"
             >
               Create Free Account
             </button>

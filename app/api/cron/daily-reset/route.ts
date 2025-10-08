@@ -5,6 +5,8 @@ import type { Database } from '@/types/database'
 import type { Profile } from '@/types'
 import { getUserTodayLocalDate } from '@/lib/utils/date'
 import { createDefaultDailyEntry } from '@/lib/utils/typeConverters'
+import { getUsersForInactivityReminders, sendTaskReminderEmail } from '@/lib/services/email'
+import { getIncompleteTasks, hasIncompleteTasks } from '@/lib/utils/taskCompletion'
 
 /**
  * Vercel Cron Job Handler for Daily Reset
@@ -162,13 +164,89 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Return summary
+    // Process inactivity-based email reminders
+    let emailsSent = 0
+    let emailErrors = 0
+    
+    try {
+      const inactiveUsers = await getUsersForInactivityReminders()
+      console.log(`Found ${inactiveUsers.length} users eligible for inactivity reminders`)
+
+      for (const inactiveUser of inactiveUsers) {
+        try {
+          const userTimezone = inactiveUser.timezone || defaultTimezone
+          const todayDate = getUserTodayLocalDate(userTimezone)
+
+          // Get today's entry to check for incomplete tasks
+          const { data: todayEntry, error: entryError } = await supabase
+            .from('daily_entries')
+            .select('*')
+            .eq('user_id', inactiveUser.user_id)
+            .eq('entry_date', todayDate)
+            .single()
+
+          if (entryError && entryError.code !== 'PGRST116') {
+            console.error(`Error fetching entry for inactive user ${inactiveUser.user_id}:`, entryError)
+            emailErrors++
+            continue
+          }
+
+          let incompleteTasks: Array<{ name: string; details: string }> = []
+
+          if (!todayEntry) {
+            // No entry means all tasks are incomplete
+            incompleteTasks = [
+              { name: 'Study Blocks', details: '4 study blocks need to be completed' },
+              { name: 'Reading', details: 'Daily reading session not completed' },
+              { name: 'Pushups', details: '3 pushup sets need to be completed' },
+              { name: 'Meditation', details: 'Daily meditation session not completed' },
+              { name: 'Water Intake', details: '8 water bottles need to be consumed' }
+            ]
+          } else if (hasIncompleteTasks(todayEntry)) {
+            incompleteTasks = getIncompleteTasks(todayEntry)
+          }
+
+          if (incompleteTasks.length > 0) {
+            // Extract user name from email
+            const userName = inactiveUser.email.split('@')[0]
+              .replace(/[._]/g, ' ')
+              .replace(/\b\w/g, (l: string) => l.toUpperCase())
+
+            const result = await sendTaskReminderEmail({
+              userId: inactiveUser.user_id,
+              email: inactiveUser.email,
+              userName,
+              incompleteTasks,
+              triggerType: 'inactivity',
+              timezone: userTimezone
+            })
+
+            if (result.success) {
+              emailsSent++
+              console.log(`Inactivity reminder sent to ${inactiveUser.email}`)
+            } else {
+              emailErrors++
+              console.error(`Failed to send inactivity reminder to ${inactiveUser.email}:`, result.error)
+            }
+          }
+        } catch (userEmailError) {
+          console.error(`Error processing inactivity email for user ${inactiveUser.user_id}:`, userEmailError)
+          emailErrors++
+        }
+      }
+    } catch (emailProcessError) {
+      console.error('Error processing inactivity emails:', emailProcessError)
+    }
+
+    // Return comprehensive summary
     return NextResponse.json({
       processedUsers,
       createdEntries,
       skipped,
       errors,
-      message: `Processed ${processedUsers} users, created ${createdEntries} entries, skipped ${skipped}, errors ${errors}`
+      emailsSent,
+      emailErrors,
+      message: `Processed ${processedUsers} users, created ${createdEntries} entries, skipped ${skipped}, errors ${errors}, sent ${emailsSent} emails, email errors ${emailErrors}`
     })
 
   } catch (error) {
