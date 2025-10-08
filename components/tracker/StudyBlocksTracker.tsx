@@ -38,8 +38,8 @@ export function StudyBlocksTracker({ blocks, onChange }: StudyBlocksTrackerProps
   const totalHours = blocks.length
 
   return (
-    <div className="bg-surface border border-border rounded-lg p-4 sm:p-6 animate-in">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
+    <div className="bg-surface border border-border rounded-xl p-5 sm:p-6 lg:p-8 animate-in shadow-sm hover:shadow-md transition-all duration-300">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-5 sm:mb-6 gap-4 sm:gap-6">
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-lg shadow-purple-500/30">
             <span className="text-xl sm:text-2xl">{TARGETS.STUDY.icon}</span>
@@ -70,7 +70,7 @@ export function StudyBlocksTracker({ blocks, onChange }: StudyBlocksTrackerProps
       </div>
 
       {/* Progress Bar */}
-      <div className="mb-5">
+      <div className="mb-6 sm:mb-7">
         <div className="h-3 bg-background rounded-full overflow-hidden shadow-inner">
           <div
             className="h-full bg-gradient-to-r from-purple-500 via-purple-400 to-pink-400 transition-all duration-500 ease-out relative overflow-hidden"
@@ -86,17 +86,17 @@ export function StudyBlocksTracker({ blocks, onChange }: StudyBlocksTrackerProps
         </div>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-4 sm:space-y-5">
         {blocks.map((block, index) => (
           <div
             key={index}
             className="group relative"
           >
             <div
-              className={`flex items-center space-x-3 p-3 sm:p-4 rounded-xl border-2 transition-all duration-200 ${
+              className={`flex items-center space-x-3 sm:space-x-4 p-4 sm:p-5 rounded-xl border-2 transition-all duration-200 ${
                 block.checked
                   ? 'bg-gradient-to-r from-purple-50/10 to-pink-50/10 border-purple-400/50 shadow-md shadow-purple-500/10'
-                  : 'bg-background border-border hover:border-purple-400/50'
+                  : 'bg-background border-border hover:border-purple-400/50 hover:shadow-sm'
               }`}
             >
               {/* Custom Checkbox */}
@@ -153,7 +153,7 @@ export function StudyBlocksTracker({ blocks, onChange }: StudyBlocksTrackerProps
         {/* Add Button */}
         <button
           onClick={handleAddBlock}
-          className="w-full p-3 sm:p-4 rounded-xl border-2 border-dashed border-border hover:border-purple-400 bg-background hover:bg-purple-50/5 transition-all duration-200 flex items-center justify-center gap-2 group min-h-[44px]"
+          className="w-full p-4 sm:p-5 rounded-xl border-2 border-dashed border-border hover:border-purple-400 bg-background hover:bg-purple-50/5 transition-all duration-200 flex items-center justify-center gap-2 group min-h-[48px] sm:min-h-[52px] hover:shadow-sm"
           aria-label="Add study block"
         >
           <Plus className="w-5 h-5 text-text-tertiary group-hover:text-purple-400 transition-colors" />
@@ -164,7 +164,7 @@ export function StudyBlocksTracker({ blocks, onChange }: StudyBlocksTrackerProps
       </div>
 
       {isTargetMet && (
-        <div className="mt-4 text-sm text-success text-center animate-in flex items-center justify-center gap-2">
+        <div className="mt-5 sm:mt-6 p-3 sm:p-4 bg-success/10 border border-success/20 rounded-lg text-sm text-success text-center animate-in flex items-center justify-center gap-2 shadow-sm">
           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
           </svg>

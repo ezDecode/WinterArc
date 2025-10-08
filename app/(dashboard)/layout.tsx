@@ -61,8 +61,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       <nav className={`border-b border-border bg-surface/50 backdrop-blur-sm sticky top-0 z-50 transition-all duration-300 ${
         isScrolled ? 'shadow-lg shadow-black/20' : ''
       }`}>
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
-          <div className="flex justify-between items-center h-14 sm:h-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16 sm:h-18">
             {/* Logo */}
             <Link 
               href="/today" 
@@ -182,8 +182,10 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       </div>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8">
-        {children}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
+        <div className="w-full">
+          {children}
+        </div>
       </main>
     </div>
   )

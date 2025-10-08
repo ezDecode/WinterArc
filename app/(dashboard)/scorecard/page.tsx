@@ -78,7 +78,7 @@ export default function ScorecardPage() {
   }
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-6 sm:space-y-8">
       <div>
         <h1 className="text-2xl sm:text-3xl font-bold text-text-primary">13-Week Scorecard</h1>
         <p className="text-sm sm:text-base text-text-secondary mt-1">
@@ -87,7 +87,7 @@ export default function ScorecardPage() {
       </div>
 
       {/* Legend */}
-      <div className="flex flex-wrap gap-2 sm:gap-4 items-center justify-center text-xs sm:text-sm">
+      <div className="flex flex-wrap gap-3 sm:gap-6 items-center justify-center text-xs sm:text-sm bg-surface/30 rounded-xl p-4 sm:p-5 backdrop-blur-sm">
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 sm:w-6 sm:h-6 bg-[#10b981] rounded"></div>
           <span className="text-text-secondary">Perfect (5/5)</span>
@@ -111,10 +111,10 @@ export default function ScorecardPage() {
       </div>
 
       {/* Scorecard Grid */}
-      <div className="bg-surface border border-border rounded-lg p-3 sm:p-4 md:p-6 lg:p-8 overflow-x-auto">
-        <div className="min-w-[600px] sm:min-w-[640px]">
+      <div className="bg-surface border border-border rounded-xl p-4 sm:p-5 md:p-6 lg:p-8 overflow-x-auto shadow-sm hover:shadow-md transition-all duration-300">
+        <div className="min-w-[640px] sm:min-w-[700px]">
           {/* Header Row */}
-          <div className="grid grid-cols-9 gap-1 sm:gap-2 mb-3">
+          <div className="grid grid-cols-9 gap-2 sm:gap-3 mb-4 sm:mb-5">
             <div className="text-xs font-semibold text-text-secondary text-center">Week</div>
             {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
               <div key={day} className="text-xs font-semibold text-text-secondary text-center">
@@ -125,9 +125,9 @@ export default function ScorecardPage() {
           </div>
 
           {/* Week Rows */}
-          <div className="space-y-1 sm:space-y-2">
+          <div className="space-y-2 sm:space-y-3">
             {scorecard.weeks.map((week) => (
-              <div key={week.weekNumber} className="grid grid-cols-9 gap-1 sm:gap-2">
+              <div key={week.weekNumber} className="grid grid-cols-9 gap-2 sm:gap-3">
                 {/* Week Number */}
                 <div className="flex items-center justify-center">
                   <div className="text-xs sm:text-sm font-semibold text-text-primary">
@@ -141,9 +141,9 @@ export default function ScorecardPage() {
                     key={index}
                     href={day.isFuture ? '#' : `/today?date=${day.date}`}
                     className={`
-                      aspect-square rounded-md border transition-all duration-200
-                      flex items-center justify-center min-h-[32px] sm:min-h-[40px]
-                      ${getScoreColor(day.score, day.isFuture)}
+                      aspect-square rounded-lg border transition-all duration-200
+                      flex items-center justify-center min-h-[36px] sm:min-h-[44px]
+                      ${getScoreColor(day.score, day.isFuture)} hover:scale-105
                     `}
                     onClick={(e) => day.isFuture && e.preventDefault()}
                   >
@@ -164,8 +164,8 @@ export default function ScorecardPage() {
           </div>
 
           {/* Summary Stats */}
-          <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-border">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+          <div className="mt-6 sm:mt-8 pt-6 sm:pt-8 border-t border-border">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
               <div className="text-center">
                 <div className="text-lg sm:text-2xl font-bold text-success">
                   {scorecard.weeks.reduce((sum, week) => 
