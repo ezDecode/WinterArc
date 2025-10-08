@@ -40,6 +40,7 @@ export function AnimatedTabs({ tabs, activeTab, className = '' }: AnimatedTabsPr
           left: `${offsetLeft}px`,
           width: `${offsetWidth}px`,
         })
+        console.log('Hover style updated:', { left: offsetLeft, width: offsetWidth, index: hoveredIndex })
       }
     }
   }, [hoveredIndex])
@@ -90,24 +91,25 @@ export function AnimatedTabs({ tabs, activeTab, className = '' }: AnimatedTabsPr
 
   return (
     <div className={`relative ${className}`}>
-      {/* Hover Highlight */}
+      {/* Hover Highlight - Behind tabs */}
       <div
-        className="absolute h-[36px] transition-all duration-300 ease-out bg-surface-hover/50 rounded-lg pointer-events-none"
+        className="absolute h-[36px] transition-all duration-300 ease-out rounded-md pointer-events-none z-0"
         style={{
           ...hoverStyle,
           top: '0px',
-          opacity: hoveredIndex !== null && hoveredIndex !== activeIndex ? 1 : 0,
+          opacity: hoveredIndex !== null ? 1 : 0,
+          backgroundColor: 'rgba(255, 255, 255, 0.1)',
         }}
       />
 
       {/* Active Indicator - Bottom Line */}
       <div
-        className="absolute bottom-0 h-[2px] bg-purple-400 transition-all duration-300 ease-out rounded-full"
+        className="absolute bottom-[-2px] h-[2px] bg-text-primary transition-all duration-300 ease-out z-10"
         style={activeStyle}
       />
 
       {/* Tabs */}
-      <div className="relative flex space-x-1 items-center">
+      <div className="relative flex space-x-[4px] items-center z-10">
         {tabs.map((tab, index) => {
           const Icon = tab.icon
           const isActive = index === activeIndex
@@ -118,26 +120,25 @@ export function AnimatedTabs({ tabs, activeTab, className = '' }: AnimatedTabsPr
               ref={(el) => {
                 tabRefs.current[index] = el
               }}
-              className="relative"
+              className="relative z-10"
+              onMouseEnter={() => setHoveredIndex(index)}
+              onMouseLeave={() => setHoveredIndex(null)}
             >
               <Link
                 href={tab.href}
                 className={`
-                  px-3 sm:px-4 py-2 cursor-pointer transition-colors duration-200 
-                  h-[36px] rounded-lg flex items-center gap-2 whitespace-nowrap
-                  focus:outline-none focus:ring-2 focus:ring-purple-500 
-                  focus:ring-offset-2 focus:ring-offset-black
+                  relative px-3 py-2 cursor-pointer transition-colors duration-300 
+                  h-[36px] flex items-center gap-2 whitespace-nowrap
+                  focus:outline-none
                   ${isActive 
                     ? 'text-text-primary' 
                     : 'text-text-secondary hover:text-text-primary'
                   }
                 `}
-                onMouseEnter={() => setHoveredIndex(index)}
-                onMouseLeave={() => setHoveredIndex(null)}
                 aria-current={isActive ? 'page' : undefined}
               >
                 {Icon && <Icon className="w-4 h-4 flex-shrink-0" />}
-                <span className="text-sm font-medium">{tab.label}</span>
+                <span className="text-sm font-medium leading-5">{tab.label}</span>
               </Link>
             </div>
           )
