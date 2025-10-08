@@ -167,14 +167,17 @@ export function LandingPage() {
             <div className="flex flex-col sm:flex-row gap-3 justify-center items-center mb-8 sm:mb-12 animate-in">
               <button
                 onClick={() => router.push('/sign-up')}
-                className="group px-6 sm:px-8 py-3 sm:py-4 bg-purple-600 text-white font-medium text-sm sm:text-base rounded-xl hover:shadow-xl hover:shadow-purple-500/40 transition-all duration-300 ease-out hover:scale-105 flex items-center gap-2 w-full sm:w-auto justify-center min-h-[44px]"
+                className="group px-6 sm:px-8 py-3 sm:py-4 bg-purple-600 text-white font-medium text-sm sm:text-base rounded-xl hover:shadow-xl hover:shadow-purple-500/40 transition-all duration-300 ease-out hover:scale-105 focus:outline-none   focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-black flex items-center gap-2 w-full sm:w-auto justify-center min-h-[48px] relative overflow-hidden"
+                aria-label="Get started with Winter Arc for $1.99"
               >
-                Get Started — $1.99
-                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
+                <span className="relative z-10">Get Started — $1.99</span>
+                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform relative z-10" />
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-purple-500 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </button>
               <button
                 onClick={() => router.push('/sign-in')}
-                className="px-6 sm:px-8 py-3 sm:py-4 bg-surface/50 backdrop-blur-sm border border-border text-text-primary font-medium text-sm sm:text-base rounded-xl hover:bg-surface hover:border-purple-500/50 transition-all duration-300 ease-out w-full sm:w-auto justify-center min-h-[44px]"
+                className="px-6 sm:px-8 py-3 sm:py-4 bg-surface/50 backdrop-blur-sm border border-border text-text-primary font-medium text-sm sm:text-base rounded-xl hover:bg-surface hover:border-purple-500/50 transition-all duration-300 ease-out focus:outline-none   focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-black w-full sm:w-auto justify-center min-h-[48px]"
+                aria-label="Sign in to your Winter Arc account"
               >
                 Sign In
               </button>

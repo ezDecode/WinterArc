@@ -61,6 +61,77 @@ body {
   }
 }
 
+/* Fade In Animation */
+.fade-in {
+  animation: fade-in 200ms ease-out;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Slide In From Left Animation */
+.slide-in-from-left-5 {
+  animation: slide-in-from-left-5 300ms ease-out;
+}
+
+@keyframes slide-in-from-left-5 {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Focus Visible Styles */
+.focus-visible\:ring-2:focus-visible {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--ring-offset-color, #000), 0 0 0 calc(2px + 2px) var(--ring-color, #a855f7);
+}
+
+/* Improved Button Focus States */
+button:focus-visible,
+a:focus-visible {
+  outline: none;
+}
+
+/* Enhanced Scrollbar for Mobile Menu */
+.mobile-menu-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.mobile-menu-scroll::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+.mobile-menu-scroll::-webkit-scrollbar-thumb {
+  background-color: #404040;
+  border-radius: 2px;
+}
+
+/* Smooth Hamburger Animation */
+@keyframes hamburger-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(180deg);
+  }
+}
+
+.hamburger-icon {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 .animate-shimmer {
   animation: shimmer 2s infinite linear;
 }

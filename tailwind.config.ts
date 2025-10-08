@@ -41,9 +41,19 @@ const config: Config = {
       },
       transitionDuration: {
         DEFAULT: '200ms',
+        '150': '150ms',
+        '250': '250ms',
+        '350': '350ms',
       },
       transitionTimingFunction: {
         DEFAULT: 'cubic-bezier(0.4, 0, 0.2, 1)',
+        'bounce': 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+        'smooth': 'cubic-bezier(0.25, 0.1, 0.25, 1)',
+      },
+      animation: {
+        'fade-in': 'fade-in 200ms ease-out',
+        'slide-in-left': 'slide-in-from-left-5 300ms ease-out',
+        'hamburger-spin': 'hamburger-spin 300ms cubic-bezier(0.4, 0, 0.2, 1)',
       },
       spacing: {
         '18': '4.5rem',

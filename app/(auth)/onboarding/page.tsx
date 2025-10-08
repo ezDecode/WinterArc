@@ -158,7 +158,7 @@ export default function OnboardingPage() {
               id="timezone"
               value={timezone}
               onChange={(e) => setTimezone(e.target.value)}
-              className="w-full bg-background border border-border rounded-lg p-3 text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/50"
+              className="w-full bg-background border border-border rounded-lg p-3 text-text-primary focus:outline-none   focus:ring-accent/50"
             >
               {Intl.supportedValuesOf('timeZone').map((tz) => (
                 <option key={tz} value={tz}>

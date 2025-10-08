@@ -1,29 +1,86 @@
 'use client'
 
-export function LoadingSpinner() {
+import { Loader2 } from 'lucide-react'
+
+interface LoadingSpinnerProps {
+  message?: string
+  size?: 'sm' | 'md' | 'lg'
+  variant?: 'default' | 'inline' | 'overlay'
+}
+
+export function LoadingSpinner({ 
+  message = "Loading...", 
+  size = 'md',
+  variant = 'default' 
+}: LoadingSpinnerProps) {
+  const getSizeClasses = () => {
+    switch (size) {
+      case 'sm':
+        return 'w-6 h-6'
+      case 'lg':
+        return 'w-16 h-16'
+      default:
+        return 'w-12 h-12'
+    }
+  }
+
+  const getTextSize = () => {
+    switch (size) {
+      case 'sm':
+        return 'text-sm'
+      case 'lg':
+        return 'text-lg'
+      default:
+        return 'text-base'
+    }
+  }
+
+  if (variant === 'inline') {
+    return (
+      <div className="flex items-center gap-2" role="status" aria-label={message}>
+        <Loader2 className={`${getSizeClasses()} animate-spin text-purple-400`} aria-hidden="true" />
+        <span className={`text-text-secondary ${getTextSize()}`}>{message}</span>
+      </div>
+    )
+  }
+
+  if (variant === 'overlay') {
+    return (
+      <div 
+        className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50" 
+        role="status" 
+        aria-label={message}
+      >
+        <div className="flex flex-col items-center space-y-4 bg-surface border border-border rounded-xl p-6 shadow-lg">
+          <div className="relative">
+            <Loader2 className={`${getSizeClasses()} animate-spin text-purple-400`} aria-hidden="true" />
+            <div className="absolute inset-0 bg-purple-400/20 rounded-full animate-ping" />
+          </div>
+          <p className={`text-text-secondary ${getTextSize()} font-medium`}>
+            {message}
+          </p>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className="flex items-center justify-center min-h-[400px]">
-      <div className="flex flex-col items-center space-y-4">
-        <svg
-          className="w-12 h-12 animate-spin text-accent"
-          fill="none"
-          viewBox="0 0 24 24"
-        >
-          <circle
-            className="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            strokeWidth="4"
-          />
-          <path
-            className="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-          />
-        </svg>
-        <p className="text-text-secondary">Loading tracker...</p>
+    <div className="flex items-center justify-center min-h-[400px] p-4" role="status" aria-label={message}>
+      <div className="flex flex-col items-center space-y-4 animate-in">
+        <div className="relative">
+          <Loader2 className={`${getSizeClasses()} animate-spin text-purple-400`} aria-hidden="true" />
+          <div className="absolute inset-0 bg-purple-400/10 rounded-full animate-pulse" />
+        </div>
+        <div className="text-center">
+          <p className={`text-text-secondary ${getTextSize()} font-medium mb-1`}>
+            {message}
+          </p>
+          <div className="flex items-center justify-center space-x-1">
+            <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+            <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+            <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+          </div>
+        </div>
       </div>
     </div>
   )

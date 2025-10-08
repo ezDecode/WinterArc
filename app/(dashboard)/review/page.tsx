@@ -242,7 +242,7 @@ export default function ReviewPage() {
               onChange={(e) => handleInputChange('what_helped', e.target.value)}
               rows={4}
               placeholder="Reflect on what strategies, habits, or circumstances helped you succeed..."
-              className="w-full bg-background border border-border rounded-lg p-4 text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-accent/50 resize-none"
+              className="w-full bg-background border border-border rounded-lg p-4 text-text-primary placeholder:text-text-tertiary focus:outline-none   focus:ring-accent/50 resize-none"
             />
           </div>
 
@@ -257,7 +257,7 @@ export default function ReviewPage() {
               onChange={(e) => handleInputChange('what_blocked', e.target.value)}
               rows={4}
               placeholder="Identify obstacles, challenges, or patterns that hindered your consistency..."
-              className="w-full bg-background border border-border rounded-lg p-4 text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-accent/50 resize-none"
+              className="w-full bg-background border border-border rounded-lg p-4 text-text-primary placeholder:text-text-tertiary focus:outline-none   focus:ring-accent/50 resize-none"
             />
           </div>
 
@@ -272,7 +272,7 @@ export default function ReviewPage() {
               onChange={(e) => handleInputChange('next_week_change', e.target.value)}
               rows={4}
               placeholder="Commit to one specific change or adjustment for better results..."
-              className="w-full bg-background border border-border rounded-lg p-4 text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-accent/50 resize-none"
+              className="w-full bg-background border border-border rounded-lg p-4 text-text-primary placeholder:text-text-tertiary focus:outline-none   focus:ring-accent/50 resize-none"
             />
           </div>
 
