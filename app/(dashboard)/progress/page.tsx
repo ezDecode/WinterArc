@@ -75,10 +75,10 @@ export default function ProgressPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-text-primary">Progress Dashboard</h1>
-        <p className="text-text-secondary mt-1">
+        <h1 className="text-2xl sm:text-3xl font-bold text-text-primary">Progress Dashboard</h1>
+        <p className="text-sm sm:text-base text-text-secondary mt-1">
           Track your streaks, completion rates, and trends
         </p>
       </div>
@@ -90,10 +90,10 @@ export default function ProgressPage() {
       />
 
       {/* Key Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-surface border border-border rounded-lg p-6">
-          <div className="text-sm text-text-secondary">Days Completed</div>
-          <div className="text-3xl font-bold text-text-primary mt-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="bg-surface border border-border rounded-lg p-4 sm:p-6">
+          <div className="text-xs sm:text-sm text-text-secondary">Days Completed</div>
+          <div className="text-2xl sm:text-3xl font-bold text-text-primary mt-2">
             {dashboard.completedDays}/{dashboard.totalDays}
           </div>
           <div className="text-xs text-text-tertiary mt-1">
@@ -101,9 +101,9 @@ export default function ProgressPage() {
           </div>
         </div>
 
-        <div className="bg-surface border border-border rounded-lg p-6">
-          <div className="text-sm text-text-secondary">Average Score</div>
-          <div className="text-3xl font-bold text-warning mt-2">
+        <div className="bg-surface border border-border rounded-lg p-4 sm:p-6">
+          <div className="text-xs sm:text-sm text-text-secondary">Average Score</div>
+          <div className="text-2xl sm:text-3xl font-bold text-warning mt-2">
             {dashboard.weeklyAverageScore.toFixed(1)}/5
           </div>
           <div className="text-xs text-text-tertiary mt-1">
@@ -111,9 +111,9 @@ export default function ProgressPage() {
           </div>
         </div>
 
-        <div className="bg-surface border border-border rounded-lg p-6">
-          <div className="text-sm text-text-secondary">Study Completion</div>
-          <div className="text-3xl font-bold text-success mt-2">
+        <div className="bg-surface border border-border rounded-lg p-4 sm:p-6">
+          <div className="text-xs sm:text-sm text-text-secondary">Study Completion</div>
+          <div className="text-2xl sm:text-3xl font-bold text-success mt-2">
             {dashboard.targetCompletionRates.study}%
           </div>
           <div className="text-xs text-text-tertiary mt-1">
@@ -121,9 +121,9 @@ export default function ProgressPage() {
           </div>
         </div>
 
-        <div className="bg-surface border border-border rounded-lg p-6">
-          <div className="text-sm text-text-secondary">Water Intake</div>
-          <div className="text-3xl font-bold text-success mt-2">
+        <div className="bg-surface border border-border rounded-lg p-4 sm:p-6">
+          <div className="text-xs sm:text-sm text-text-secondary">Water Intake</div>
+          <div className="text-2xl sm:text-3xl font-bold text-success mt-2">
             {dashboard.targetCompletionRates.water}%
           </div>
           <div className="text-xs text-text-tertiary mt-1">
@@ -133,11 +133,11 @@ export default function ProgressPage() {
       </div>
 
       {/* Target Completion Breakdown */}
-      <div className="bg-surface border border-border rounded-lg p-6">
-        <h3 className="text-lg font-semibold text-text-primary mb-4">
+      <div className="bg-surface border border-border rounded-lg p-4 sm:p-6">
+        <h3 className="text-base sm:text-lg font-semibold text-text-primary mb-4">
           Target Completion Rates
         </h3>
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {[
             { name: 'Study (4 blocks)', rate: dashboard.targetCompletionRates.study, icon: '📚' },
             { name: 'Reading (10+ pages)', rate: dashboard.targetCompletionRates.reading, icon: '📖' },
@@ -146,7 +146,7 @@ export default function ProgressPage() {
             { name: 'Water (8 bottles)', rate: dashboard.targetCompletionRates.water, icon: '💧' },
           ].map((target) => (
             <div key={target.name} className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
+              <div className="flex items-center justify-between text-xs sm:text-sm">
                 <span className="text-text-primary">
                   {target.icon} {target.name}
                 </span>
@@ -166,21 +166,21 @@ export default function ProgressPage() {
       </div>
 
       {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
         <ProgressChart trendData={dashboard.trendData} type="line" />
         <ProgressChart trendData={dashboard.trendData} type="bar" />
       </div>
 
       {/* Summary Message */}
       {dashboard.currentStreak > 0 && (
-        <div className="bg-success/10 border border-success/20 rounded-lg p-6">
+        <div className="bg-success/10 border border-success/20 rounded-lg p-4 sm:p-6">
           <div className="flex items-center gap-3">
-            <div className="text-3xl">🔥</div>
+            <div className="text-2xl sm:text-3xl">🔥</div>
             <div>
-              <h4 className="text-lg font-semibold text-success">
+              <h4 className="text-base sm:text-lg font-semibold text-success">
                 {dashboard.currentStreak === 1 ? 'Great start!' : `${dashboard.currentStreak} days strong!`}
               </h4>
-              <p className="text-sm text-text-secondary mt-1">
+              <p className="text-xs sm:text-sm text-text-secondary mt-1">
                 {dashboard.currentStreak < 7
                   ? "Keep going! You're building momentum."
                   : dashboard.currentStreak < 14

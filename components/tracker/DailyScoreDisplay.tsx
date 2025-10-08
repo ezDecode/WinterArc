@@ -21,20 +21,20 @@ export const DailyScoreDisplay = memo(function DailyScoreDisplay({
   }
 
   return (
-    <div className="bg-surface border border-border rounded-lg p-6 animate-in">
+    <div className="bg-surface border border-border rounded-lg p-4 sm:p-6 animate-in">
       <h3 className="text-sm font-medium text-text-secondary mb-4">
         Daily Score
       </h3>
 
       {/* Large Score Display */}
-      <div className="flex items-center justify-center mb-6">
+      <div className="flex items-center justify-center mb-4 sm:mb-6">
         <div
-          className="text-6xl font-bold"
+          className="text-4xl sm:text-5xl lg:text-6xl font-bold"
           style={{ color: getScoreColor() }}
         >
           {score}
         </div>
-        <div className="text-3xl text-text-tertiary ml-2">
+        <div className="text-2xl sm:text-3xl text-text-tertiary ml-2">
           /{DAILY_MAX_SCORE}
         </div>
       </div>
@@ -53,7 +53,7 @@ export const DailyScoreDisplay = memo(function DailyScoreDisplay({
       </div>
 
       {/* Target Breakdown */}
-      <div className="space-y-2 text-sm">
+      <div className="space-y-2 text-xs sm:text-sm">
         <div className="flex justify-between text-text-secondary">
           <span>Study</span>
           <span>1 pt</span>
@@ -78,10 +78,10 @@ export const DailyScoreDisplay = memo(function DailyScoreDisplay({
 
       {/* Complete Badge */}
       {isComplete && (
-        <div className="mt-6 p-4 bg-success/10 border border-success/20 rounded-lg animate-in">
+        <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-success/10 border border-success/20 rounded-lg animate-in">
           <div className="flex items-center justify-center space-x-2">
-            <span className="text-2xl">🎉</span>
-            <span className="text-success font-semibold">
+            <span className="text-xl sm:text-2xl">🎉</span>
+            <span className="text-success font-semibold text-sm sm:text-base text-center">
               Perfect Day! All 5 targets completed!
             </span>
           </div>

@@ -34,25 +34,25 @@ export function WaterBottlesTracker({
   const isTargetMet = filledCount >= WATER_BOTTLES_COUNT
 
   return (
-    <div className="bg-surface border border-border rounded-lg p-6 animate-in">
-      <div className="flex items-center justify-between mb-4">
+    <div className="bg-surface border border-border rounded-lg p-4 sm:p-6 animate-in">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
         <div className="flex items-center space-x-3">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
-            <span className="text-2xl">{TARGETS.WATER.icon}</span>
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
+            <span className="text-xl sm:text-2xl">{TARGETS.WATER.icon}</span>
           </div>
-          <div>
-            <h3 className="text-lg font-semibold text-text-primary">
+          <div className="flex-1 min-w-0">
+            <h3 className="text-base sm:text-lg font-semibold text-text-primary">
               {TARGETS.WATER.name}
             </h3>
-            <p className="text-sm text-text-secondary">
+            <p className="text-xs sm:text-sm text-text-secondary">
               {TARGETS.WATER.description}
             </p>
           </div>
         </div>
-        <div className="text-right">
-          <div className="text-sm text-text-secondary">Progress</div>
+        <div className="text-left sm:text-right">
+          <div className="text-xs sm:text-sm text-text-secondary">Progress</div>
           <div
-            className={`text-2xl font-bold ${
+            className={`text-xl sm:text-2xl font-bold ${
               isTargetMet ? 'text-success' : 'text-text-primary'
             }`}
           >
@@ -82,12 +82,12 @@ export function WaterBottlesTracker({
       </div>
 
       {/* Bottle Grid */}
-      <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-3">
+      <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-2 sm:gap-3">
         {bottles.map((filled, index) => (
           <div key={index} className="relative group">
             <button
               onClick={() => handleBottleToggle(index)}
-              className={`w-full aspect-square rounded-xl border-2 transition-all duration-200 hover:scale-105 ${
+              className={`w-full aspect-square rounded-xl border-2 transition-all duration-200 hover:scale-105 min-h-[44px] ${
                 filled
                   ? 'bg-gradient-to-br from-blue-500 to-blue-600 border-blue-400 shadow-lg shadow-blue-500/50'
                   : 'bg-background border-border hover:border-blue-400 hover:bg-blue-50/5'
@@ -96,7 +96,7 @@ export function WaterBottlesTracker({
             >
               <div className="flex items-center justify-center h-full">
                 <svg
-                  className={`w-7 h-7 transition-colors ${
+                  className={`w-6 h-6 sm:w-7 sm:h-7 transition-colors ${
                     filled ? 'text-white' : 'text-text-tertiary'
                   }`}
                   fill="currentColor"
@@ -116,7 +116,7 @@ export function WaterBottlesTracker({
             {bottles.length > 1 && (
               <button
                 onClick={() => handleRemoveBottle(index)}
-                className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-red-600 flex items-center justify-center shadow-lg"
+                className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 w-5 h-5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-red-600 flex items-center justify-center shadow-lg min-h-[44px] min-w-[44px]"
                 aria-label="Remove bottle"
               >
                 <Trash2 className="w-3 h-3" />
@@ -128,10 +128,10 @@ export function WaterBottlesTracker({
         {/* Add Button */}
         <button
           onClick={handleAddBottle}
-          className="w-full aspect-square rounded-xl border-2 border-dashed border-border hover:border-blue-400 bg-background hover:bg-blue-50/5 transition-all duration-200 hover:scale-105 flex items-center justify-center group"
+          className="w-full aspect-square rounded-xl border-2 border-dashed border-border hover:border-blue-400 bg-background hover:bg-blue-50/5 transition-all duration-200 hover:scale-105 flex items-center justify-center group min-h-[44px]"
           aria-label="Add bottle"
         >
-          <Plus className="w-6 h-6 text-text-tertiary group-hover:text-blue-400 transition-colors" />
+          <Plus className="w-5 h-5 sm:w-6 sm:h-6 text-text-tertiary group-hover:text-blue-400 transition-colors" />
         </button>
       </div>
 

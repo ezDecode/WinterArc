@@ -7,16 +7,16 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     <div className="min-h-screen bg-background">
       {/* Navigation */}
       <nav className="border-b border-border bg-surface/50 backdrop-blur-sm sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
+          <div className="flex justify-between items-center h-14 sm:h-16">
             {/* Logo */}
             <Link href="/today" className="flex items-center space-x-2">
-              <span className="text-2xl font-bold text-text-primary">
+              <span className="text-lg sm:text-xl lg:text-2xl font-bold text-text-primary">
                 Winter Arc
               </span>
             </Link>
 
-            {/* Navigation Links */}
+            {/* Navigation Links - Desktop */}
             <div className="hidden md:flex items-center space-x-1">
               <NavLink href="/today">Today</NavLink>
               <NavLink href="/scorecard">Scorecard</NavLink>
@@ -25,11 +25,11 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             </div>
 
             {/* User Menu */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-4">
               <UserButton 
                 appearance={{
                   elements: {
-                    avatarBox: 'w-9 h-9',
+                    avatarBox: 'w-8 h-8 sm:w-9 sm:h-9',
                   },
                 }}
               />
@@ -37,7 +37,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           </div>
 
           {/* Mobile Navigation */}
-          <div className="md:hidden flex items-center space-x-1 pb-3 overflow-x-auto">
+          <div className="md:hidden flex items-center space-x-1 pb-3 overflow-x-auto scrollbar-hide">
             <NavLink href="/today">Today</NavLink>
             <NavLink href="/scorecard">Scorecard</NavLink>
             <NavLink href="/progress">Progress</NavLink>
@@ -47,7 +47,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       </nav>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8">
         {children}
       </main>
     </div>
@@ -58,7 +58,7 @@ function NavLink({ href, children }: { href: string; children: ReactNode }) {
   return (
     <Link
       href={href}
-      className="px-4 py-2 rounded-lg text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-hover transition-colors"
+      className="px-3 sm:px-4 py-2 rounded-lg text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-hover transition-colors whitespace-nowrap min-h-[44px] flex items-center"
     >
       {children}
     </Link>

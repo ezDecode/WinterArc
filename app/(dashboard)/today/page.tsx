@@ -76,26 +76,26 @@ export default function TodayPage() {
       />
 
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-text-primary">Today&apos;s Tracker</h1>
-          <p className="text-text-secondary mt-1">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex-1">
+          <h1 className="text-2xl sm:text-3xl font-bold text-text-primary">Today&apos;s Tracker</h1>
+          <p className="text-sm sm:text-base text-text-secondary mt-1">
             Track your daily habits and reach 5/5 points
           </p>
-          <div className="mt-2 flex items-center gap-4">
+          <div className="mt-2 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
             <SaveStatus isSaving={isSaving} lastSaved={lastSaved} error={null} />
             <button
               onClick={() => setShowShortcuts(true)}
-              className="text-sm text-text-secondary hover:text-text-primary transition-colors"
+              className="text-xs sm:text-sm text-text-secondary hover:text-text-primary transition-colors self-start"
               title="Keyboard shortcuts"
             >
-              Press <kbd className="px-2 py-1 text-xs font-mono bg-surface-light border border-border-subtle rounded">?</kbd> for shortcuts
+              Press <kbd className="px-2 py-1 text-xs font-mono bg-surface border border-border rounded">?</kbd> for shortcuts
             </button>
           </div>
         </div>
-        <div className="text-right">
-          <div className="text-sm text-text-secondary">Date</div>
-          <div className="text-lg font-medium text-text-primary">
+        <div className="text-left sm:text-right">
+          <div className="text-xs sm:text-sm text-text-secondary">Date</div>
+          <div className="text-base sm:text-lg font-medium text-text-primary">
             {new Date(entry.entry_date).toLocaleDateString('en-US', {
               weekday: 'short',
               month: 'short',
@@ -106,9 +106,9 @@ export default function TodayPage() {
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
         {/* Left Column - Trackers */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="xl:col-span-2 space-y-4 sm:space-y-6">
           <StudyBlocksTracker
             blocks={entry.study_blocks as StudyBlock[]}
             onChange={handleStudyBlocksChange}
@@ -141,8 +141,8 @@ export default function TodayPage() {
         </div>
 
         {/* Right Column - Score Display */}
-        <div className="lg:col-span-1">
-          <div className="sticky top-24">
+        <div className="xl:col-span-1">
+          <div className="sticky top-20 sm:top-24">
             <DailyScoreDisplay
               score={entry.daily_score}
               isComplete={entry.is_complete}

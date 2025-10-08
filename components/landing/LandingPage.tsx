@@ -178,18 +178,18 @@ export function LandingPage() {
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
           </div> */}
 
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-16">
+          <div className="relative max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 pt-12 sm:pt-16 pb-12 sm:pb-16">
             {/* Badge */}
-            <div className="text-center mb-6 animate-in">
+            <div className="text-center mb-4 sm:mb-6 animate-in">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-purple-500/10 border border-purple-500/20 rounded-full backdrop-blur-sm transition-all duration-300 ease-out">
                 <Sparkles className="w-4 h-4 text-purple-400" />
-                <span className="text-sm text-purple-300 font-medium">Transform in 90 Days</span>
+                <span className="text-xs sm:text-sm text-purple-300 font-medium">Transform in 90 Days</span>
                 <Sparkles className="w-4 h-4 text-purple-400" />
               </div>
             </div>
             
             {/* Heading */}
-            <h1 className="text-center text-4xl sm:text-5xl lg:text-6xl font-medium text-white mb-4 animate-in leading-tight">
+            <h1 className="text-center text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-medium text-white mb-4 animate-in leading-tight">
               Your Journey to
               <span className="block mt-1 text-transparent bg-clip-text bg-gradient-to-r from-purple-300 via-purple-400 to-purple-300 animate-gradient">
                 Greatness Starts Here
@@ -197,35 +197,35 @@ export function LandingPage() {
             </h1>
             
             {/* Subheading */}
-            <p className="text-center text-lg text-text-secondary max-w-2xl mx-auto mb-8 animate-in leading-relaxed">
+            <p className="text-center text-base sm:text-lg text-text-secondary max-w-2xl mx-auto mb-6 sm:mb-8 animate-in leading-relaxed">
               Join the <span className="text-purple-400 font-medium">Winter Arc</span> challenge. Build unbreakable habits, track your progress, and achieve your goals in 90 days.
             </p>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3 justify-center items-center mb-12 animate-in">
+            <div className="flex flex-col sm:flex-row gap-3 justify-center items-center mb-8 sm:mb-12 animate-in">
               <button
                 onClick={() => router.push('/sign-up')}
-                className="group px-8 py-4 bg-purple-600 text-white font-medium text-base rounded-xl hover:shadow-xl hover:shadow-purple-500/40 transition-all duration-300 ease-out hover:scale-105 flex items-center gap-2"
+                className="group px-6 sm:px-8 py-3 sm:py-4 bg-purple-600 text-white font-medium text-sm sm:text-base rounded-xl hover:shadow-xl hover:shadow-purple-500/40 transition-all duration-300 ease-out hover:scale-105 flex items-center gap-2 w-full sm:w-auto justify-center min-h-[44px]"
               >
                 Get Started — $1.99
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
               </button>
               <button
                 onClick={() => router.push('/sign-in')}
-                className="px-8 py-4 bg-surface/50 backdrop-blur-sm border border-border text-text-primary font-medium text-base rounded-xl hover:bg-surface hover:border-purple-500/50 transition-all duration-300 ease-out"
+                className="px-6 sm:px-8 py-3 sm:py-4 bg-surface/50 backdrop-blur-sm border border-border text-text-primary font-medium text-sm sm:text-base rounded-xl hover:bg-surface hover:border-purple-500/50 transition-all duration-300 ease-out w-full sm:w-auto justify-center min-h-[44px]"
               >
                 Sign In
               </button>
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto animate-in">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 max-w-3xl mx-auto animate-in">
               {stats.map((stat, index) => (
                 <div key={index} className="text-center">
-                  <div className="text-3xl font-medium text-purple-300 mb-1 transition-colors">
+                  <div className="text-2xl sm:text-3xl font-medium text-purple-300 mb-1 transition-colors">
                     {stat.number}
                   </div>
-                  <div className="text-sm text-text-secondary font-normal">
+                  <div className="text-xs sm:text-sm text-text-secondary font-normal">
                     {stat.label}
                   </div>
                 </div>
