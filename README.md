@@ -99,6 +99,15 @@ Transform yourself in 90 days. Track daily habits, visualize progress, and stay 
   - Screen reader support
   - Focus indicators
 
+### 📊 Analytics & Monitoring
+- **Vercel Analytics**: Privacy-friendly page view tracking
+  - Automatic page view tracking
+  - Visitor counting and demographics
+  - Traffic source analysis
+  - Device and browser insights
+  - Zero configuration required
+  - GDPR & CCPA compliant
+
 ---
 
 ## 🛠 Tech Stack
@@ -143,12 +152,19 @@ Transform yourself in 90 days. Track daily habits, visualize progress, and stay 
 - **[PostCSS](https://postcss.org/)** - CSS processing
 - **[tsx](https://tsx.is/)** - TypeScript execution for tests
 
+### Analytics & Monitoring
+- **[Vercel Analytics](https://vercel.com/analytics)** - Privacy-friendly analytics
+  - Automatic page view tracking
+  - Real-time visitor insights
+  - No cookies required
+  - GDPR & CCPA compliant
+
 ### Deployment & Hosting
 - **[Vercel](https://vercel.com/)** - Deployment platform
   - Edge Functions
   - Cron Jobs
-  - Analytics
   - CDN caching
+  - Automatic deployments
 
 ---
 

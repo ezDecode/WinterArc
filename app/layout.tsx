@@ -3,6 +3,7 @@ import { Inter_Tight } from 'next/font/google'
 import { ClerkProvider } from '@clerk/nextjs'
 import { ServiceWorkerRegistration } from '@/components/ServiceWorkerRegistration'
 import { Toaster } from 'sonner'
+import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
 const interTight = Inter_Tight({
@@ -48,6 +49,7 @@ export default function RootLayout({
             closeButton
           />
           {children}
+          <Analytics />
         </body>
       </html>
     </ClerkProvider>
