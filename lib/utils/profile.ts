@@ -5,8 +5,6 @@ import { DatabaseError } from '@/lib/errors/AppError'
 import type { Database } from '@/types/database'
 
 type Profile = Database['public']['Tables']['profiles']['Row']
-type ProfileInsert = Database['public']['Tables']['profiles']['Insert']
-type ProfileUpdate = Database['public']['Tables']['profiles']['Update']
 
 /**
  * Get or create user profile for Clerk user (Server-side version)
@@ -51,6 +49,7 @@ export async function getOrCreateProfile(
     console.log('[Profile] Found by email, updating clerk_user_id:', emailProfile.id)
 
     const updateResult = await (supabaseAdmin
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .from('profiles') as any)
       .update({
         clerk_user_id: clerkUserId,
@@ -88,6 +87,7 @@ export async function getOrCreateProfile(
   })
 
   const createResult = await (supabaseAdmin
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     .from('profiles') as any)
     .insert(profileData)
     .select()

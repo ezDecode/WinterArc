@@ -5,6 +5,9 @@ import { toast } from 'sonner'
 import { SkeletonCard } from '@/components/ui/Skeleton'
 import type { WeeklyReview } from '@/types'
 
+// Force dynamic rendering - this page requires authentication
+export const dynamic = 'force-dynamic'
+
 export default function ReviewPage() {
   const [currentWeek, setCurrentWeek] = useState<number>(1)
   const [reviews, setReviews] = useState<WeeklyReview[]>([])

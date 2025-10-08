@@ -5,6 +5,9 @@ import Link from 'next/link'
 import { SkeletonScorecard } from '@/components/ui/Skeleton'
 import type { ScorecardData } from '@/types'
 
+// Force dynamic rendering - this page requires authentication
+export const dynamic = 'force-dynamic'
+
 export default function ScorecardPage() {
   const [scorecard, setScorecard] = useState<ScorecardData | null>(null)
   const [loading, setLoading] = useState(true)

@@ -16,6 +16,9 @@ import { KeyboardShortcutsModal } from '@/components/ui/KeyboardShortcutsModal'
 import { SkeletonPage } from '@/components/ui/Skeleton'
 import type { StudyBlock, Reading, Pushups, Meditation, Notes } from '@/types'
 
+// Force dynamic rendering - this page requires authentication
+export const dynamic = 'force-dynamic'
+
 export default function TodayPage() {
   const { entry, isLoading, error, updateEntry, refreshEntry, isSaving, lastSaved } =
     useDailyEntry()

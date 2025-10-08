@@ -1,13 +1,16 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import dynamic from 'next/dynamic'
+import dynamicImport from 'next/dynamic'
 import { StreakCounter } from '@/components/analytics/StreakCounter'
 import { SkeletonStats, SkeletonChart } from '@/components/ui/Skeleton'
 import type { DashboardStats } from '@/types'
 
+// Force dynamic rendering - this page requires authentication
+export const dynamic = 'force-dynamic'
+
 // Dynamic import for chart to reduce initial bundle size
-const ProgressChart = dynamic(
+const ProgressChart = dynamicImport(
   () => import('@/components/analytics/ProgressChart').then(mod => ({ default: mod.ProgressChart })),
   {
     loading: () => <SkeletonChart />,
