@@ -4,6 +4,7 @@ import { supabaseAdmin } from '@/lib/supabase/server'
 import { getOrCreateProfile } from '@/lib/utils/profile'
 import { z } from 'zod'
 import type { WeeklyReview } from '@/types'
+import type { Database } from '@/types/database'
 
 // Validation schema for weekly review
 const weeklyReviewSchema = z.object({
@@ -37,11 +38,16 @@ export async function POST(request: Request) {
     const email = user.emailAddresses[0]?.emailAddress || 'user@example.com'
 
     // Get or create user profile
-    const profile = await getOrCreateProfile(userId, email)
-
-    if (!profile) {
+    let profile
+    try {
+      profile = await getOrCreateProfile(userId, email)
+    } catch (profileError) {
+      console.error('Error in getOrCreateProfile:', profileError)
       return NextResponse.json(
-        { error: 'Failed to create profile' },
+        { 
+          error: 'Failed to fetch or create profile',
+          details: profileError instanceof Error ? profileError.message : 'Unknown error'
+        },
         { status: 500 }
       )
     }
@@ -71,48 +77,62 @@ export async function POST(request: Request) {
 
     if (existingReview) {
       // Update existing review
-      // @ts-expect-error - Supabase type narrowing issue
       const reviewId: string = existingReview.id
+      
+      const updateData: Database['public']['Tables']['weekly_reviews']['Update'] = {
+        review_date: reviewData.review_date,
+        days_hit_all: reviewData.days_hit_all,
+        what_helped: reviewData.what_helped,
+        what_blocked: reviewData.what_blocked,
+        next_week_change: reviewData.next_week_change,
+      }
+      
       const { data, error } = await supabaseAdmin
         .from('weekly_reviews')
-        // @ts-ignore - Supabase type narrowing issue
-        .update({
-          review_date: reviewData.review_date,
-          days_hit_all: reviewData.days_hit_all,
-          what_helped: reviewData.what_helped,
-          what_blocked: reviewData.what_blocked,
-          next_week_change: reviewData.next_week_change,
-        })
+        .update(updateData)
         .eq('id', reviewId)
         .select()
         .single()
 
       if (error) {
         console.error('Error updating review:', error)
-        return NextResponse.json({ error: 'Failed to update review' }, { status: 500 })
+        return NextResponse.json(
+          { 
+            error: 'Failed to update review',
+            details: error.message
+          },
+          { status: 500 }
+        )
       }
 
       result = data
     } else {
       // Create new review
+      const insertData: Database['public']['Tables']['weekly_reviews']['Insert'] = {
+        user_id: profile.id,
+        week_number: reviewData.week_number,
+        review_date: reviewData.review_date,
+        days_hit_all: reviewData.days_hit_all,
+        what_helped: reviewData.what_helped,
+        what_blocked: reviewData.what_blocked,
+        next_week_change: reviewData.next_week_change,
+      }
+      
       const { data, error } = await supabaseAdmin
         .from('weekly_reviews')
-        // @ts-ignore - Supabase type narrowing issue
-        .insert({
-          user_id: profile.id,
-          week_number: reviewData.week_number,
-          review_date: reviewData.review_date,
-          days_hit_all: reviewData.days_hit_all,
-          what_helped: reviewData.what_helped,
-          what_blocked: reviewData.what_blocked,
-          next_week_change: reviewData.next_week_change,
-        })
+        .insert(insertData)
         .select()
         .single()
 
       if (error) {
         console.error('Error creating review:', error)
-        return NextResponse.json({ error: 'Failed to create review' }, { status: 500 })
+        return NextResponse.json(
+          { 
+            error: 'Failed to create review',
+            details: error.message
+          },
+          { status: 500 }
+        )
       }
 
       result = data
@@ -121,7 +141,13 @@ export async function POST(request: Request) {
     return NextResponse.json(result as WeeklyReview, { status: existingReview ? 200 : 201 })
   } catch (error) {
     console.error('Error in POST /api/reviews:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json(
+      { 
+        error: 'Internal server error',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
+      { status: 500 }
+    )
   }
 }
 
@@ -147,11 +173,16 @@ export async function GET() {
     const email = user.emailAddresses[0]?.emailAddress || 'user@example.com'
 
     // Get or create user profile
-    const profile = await getOrCreateProfile(userId, email)
-
-    if (!profile) {
+    let profile
+    try {
+      profile = await getOrCreateProfile(userId, email)
+    } catch (profileError) {
+      console.error('Error in getOrCreateProfile:', profileError)
       return NextResponse.json(
-        { error: 'Failed to create profile' },
+        { 
+          error: 'Failed to fetch or create profile',
+          details: profileError instanceof Error ? profileError.message : 'Unknown error'
+        },
         { status: 500 }
       )
     }
@@ -165,12 +196,24 @@ export async function GET() {
 
     if (reviewsError) {
       console.error('Error fetching reviews:', reviewsError)
-      return NextResponse.json({ error: 'Failed to fetch reviews' }, { status: 500 })
+      return NextResponse.json(
+        { 
+          error: 'Failed to fetch reviews',
+          details: reviewsError.message
+        },
+        { status: 500 }
+      )
     }
 
     return NextResponse.json(reviews as WeeklyReview[])
   } catch (error) {
     console.error('Error in GET /api/reviews:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json(
+      { 
+        error: 'Internal server error',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
+      { status: 500 }
+    )
   }
 }

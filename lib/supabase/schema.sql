@@ -20,6 +20,9 @@ CREATE TABLE IF NOT EXISTS profiles (
 -- Add index for faster clerk_user_id lookups
 CREATE INDEX idx_profiles_clerk_user_id ON profiles(clerk_user_id);
 
+-- Add index for timezone queries (optimizes daily reset cron job)
+CREATE INDEX IF NOT EXISTS idx_profiles_timezone ON profiles(timezone);
+
 -- ============================================
 -- DAILY ENTRIES TABLE
 -- ============================================
@@ -112,42 +115,22 @@ CREATE POLICY "Users can update own profile"
 -- Users can view their own daily entries
 CREATE POLICY "Users can view own daily entries"
   ON daily_entries FOR SELECT
-  USING (
-    user_id IN (
-      SELECT id FROM profiles 
-      WHERE clerk_user_id = current_setting('request.jwt.claim.sub', true)
-    )
-  );
+  USING (user_id = public.uid());
 
 -- Users can insert their own daily entries
 CREATE POLICY "Users can insert own daily entries"
   ON daily_entries FOR INSERT
-  WITH CHECK (
-    user_id IN (
-      SELECT id FROM profiles 
-      WHERE clerk_user_id = current_setting('request.jwt.claim.sub', true)
-    )
-  );
+  WITH CHECK (user_id = public.uid());
 
 -- Users can update their own daily entries
 CREATE POLICY "Users can update own daily entries"
   ON daily_entries FOR UPDATE
-  USING (
-    user_id IN (
-      SELECT id FROM profiles 
-      WHERE clerk_user_id = current_setting('request.jwt.claim.sub', true)
-    )
-  );
+  USING (user_id = public.uid());
 
 -- Users can delete their own daily entries
 CREATE POLICY "Users can delete own daily entries"
   ON daily_entries FOR DELETE
-  USING (
-    user_id IN (
-      SELECT id FROM profiles 
-      WHERE clerk_user_id = current_setting('request.jwt.claim.sub', true)
-    )
-  );
+  USING (user_id = public.uid());
 
 -- ============================================
 -- RLS POLICIES FOR WEEKLY REVIEWS
@@ -156,32 +139,17 @@ CREATE POLICY "Users can delete own daily entries"
 -- Users can view their own weekly reviews
 CREATE POLICY "Users can view own weekly reviews"
   ON weekly_reviews FOR SELECT
-  USING (
-    user_id IN (
-      SELECT id FROM profiles 
-      WHERE clerk_user_id = current_setting('request.jwt.claim.sub', true)
-    )
-  );
+  USING (user_id = public.uid());
 
 -- Users can insert their own weekly reviews
 CREATE POLICY "Users can insert own weekly reviews"
   ON weekly_reviews FOR INSERT
-  WITH CHECK (
-    user_id IN (
-      SELECT id FROM profiles 
-      WHERE clerk_user_id = current_setting('request.jwt.claim.sub', true)
-    )
-  );
+  WITH CHECK (user_id = public.uid());
 
 -- Users can update their own weekly reviews
 CREATE POLICY "Users can update own weekly reviews"
   ON weekly_reviews FOR UPDATE
-  USING (
-    user_id IN (
-      SELECT id FROM profiles 
-      WHERE clerk_user_id = current_setting('request.jwt.claim.sub', true)
-    )
-  );
+  USING (user_id = public.uid());
 
 -- ============================================
 -- RLS POLICIES FOR CHECKPOINT NOTES
@@ -190,36 +158,30 @@ CREATE POLICY "Users can update own weekly reviews"
 -- Users can view their own checkpoint notes
 CREATE POLICY "Users can view own checkpoint notes"
   ON checkpoint_notes FOR SELECT
-  USING (
-    user_id IN (
-      SELECT id FROM profiles 
-      WHERE clerk_user_id = current_setting('request.jwt.claim.sub', true)
-    )
-  );
+  USING (user_id = public.uid());
 
 -- Users can insert their own checkpoint notes
 CREATE POLICY "Users can insert own checkpoint notes"
   ON checkpoint_notes FOR INSERT
-  WITH CHECK (
-    user_id IN (
-      SELECT id FROM profiles 
-      WHERE clerk_user_id = current_setting('request.jwt.claim.sub', true)
-    )
-  );
+  WITH CHECK (user_id = public.uid());
 
 -- Users can update their own checkpoint notes
 CREATE POLICY "Users can update own checkpoint notes"
   ON checkpoint_notes FOR UPDATE
-  USING (
-    user_id IN (
-      SELECT id FROM profiles 
-      WHERE clerk_user_id = current_setting('request.jwt.claim.sub', true)
-    )
-  );
+  USING (user_id = public.uid());
 
 -- ============================================
 -- FUNCTIONS
 -- ============================================
+
+-- Function to get current user's UUID from profiles table
+-- This function is used in RLS policies for better performance
+CREATE OR REPLACE FUNCTION public.uid()
+RETURNS UUID AS $$
+  SELECT id FROM public.profiles 
+  WHERE clerk_user_id = current_setting('request.jwt.claim.sub', true)
+  LIMIT 1;
+$$ LANGUAGE SQL STABLE;
 
 -- Function to automatically update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()
