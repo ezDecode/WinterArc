@@ -3,6 +3,8 @@ import { createClient } from '@supabase/supabase-js'
 import type { Database } from '@/types/database'
 import { getUserTodayLocalDate } from '@/lib/utils/date'
 
+type Profile = Database['public']['Tables']['profiles']['Row']
+
 /**
  * Vercel Cron Job Handler for Daily Reset
  * 
@@ -66,7 +68,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const profiles = profilesData || []
+    const profiles: Profile[] = (profilesData as Profile[]) || []
 
     if (profiles.length === 0) {
       return NextResponse.json({
