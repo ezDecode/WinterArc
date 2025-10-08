@@ -104,8 +104,8 @@ export async function PATCH(request: NextRequest) {
       updates.timezone = timezone
     }
 
-    const { data: updatedProfile, error: updateError } = await supabaseAdmin
-      .from('profiles')
+    const { data: updatedProfile, error: updateError } = await (supabaseAdmin
+      .from('profiles') as any)
       .update(updates)
       .eq('clerk_user_id', userId)
       .select()

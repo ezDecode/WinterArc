@@ -69,8 +69,8 @@ export async function GET() {
         is_complete: false,
       }
 
-      const { data: newEntry, error: createError } = await supabaseAdmin
-        .from('daily_entries')
+      const { data: newEntry, error: createError } = await (supabaseAdmin
+        .from('daily_entries') as any)
         .insert(defaultEntry)
         .select()
         .single()

@@ -66,18 +66,19 @@ export async function POST(request: Request) {
     const reviewData = validationResult.data
 
     // Check if review already exists for this week
-    const { data: existingReview } = await supabaseAdmin
+    const existingReviewResult = await supabaseAdmin
       .from('weekly_reviews')
       .select('id')
       .eq('user_id', profile.id)
       .eq('week_number', reviewData.week_number)
-      .single()
+      .maybeSingle()
 
     let result
+    const isUpdate = !!existingReviewResult.data
 
-    if (existingReview) {
+    if (isUpdate) {
       // Update existing review
-      const reviewId: string = existingReview.id
+      const reviewId: string = (existingReviewResult.data as any).id
       
       const updateData: Database['public']['Tables']['weekly_reviews']['Update'] = {
         review_date: reviewData.review_date,
@@ -87,8 +88,8 @@ export async function POST(request: Request) {
         next_week_change: reviewData.next_week_change,
       }
       
-      const { data, error } = await supabaseAdmin
-        .from('weekly_reviews')
+      const { data, error } = await (supabaseAdmin
+        .from('weekly_reviews') as any)
         .update(updateData)
         .eq('id', reviewId)
         .select()
@@ -118,8 +119,8 @@ export async function POST(request: Request) {
         next_week_change: reviewData.next_week_change,
       }
       
-      const { data, error } = await supabaseAdmin
-        .from('weekly_reviews')
+      const { data, error } = await (supabaseAdmin
+        .from('weekly_reviews') as any)
         .insert(insertData)
         .select()
         .single()
@@ -138,7 +139,7 @@ export async function POST(request: Request) {
       result = data
     }
 
-    return NextResponse.json(result as WeeklyReview, { status: existingReview ? 200 : 201 })
+    return NextResponse.json(result as WeeklyReview, { status: isUpdate ? 200 : 201 })
   } catch (error) {
     console.error('Error in POST /api/reviews:', error)
     return NextResponse.json(
