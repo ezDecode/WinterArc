@@ -30,17 +30,6 @@ export async function getOrCreateProfile(
     throw new Error(`Failed to fetch profile: ${fetchError.message}`)
   }
 
-
-  // Create new profile
-  const profileData: Database['public']['Tables']['profiles']['Insert'] = {
-    clerk_user_id: clerkUserId,
-    email,
-    timezone: DEFAULT_TIMEZONE,
-    arc_start_date: new Date().toISOString().split('T')[0],
-  }
-
-  }
-
   // Create new profile
   const profileData: Database['public']['Tables']['profiles']['Insert'] = {
     clerk_user_id: clerkUserId,
@@ -51,7 +40,7 @@ export async function getOrCreateProfile(
 
   const { data: newProfile, error: createError } = await supabaseAdmin
     .from('profiles')
-    .insert(profileData)
+    .insert(profileData as any)
     .select()
     .single()
 
