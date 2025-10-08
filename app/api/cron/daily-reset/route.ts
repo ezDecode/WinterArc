@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import type { Database } from '@/types/database'
+import type { Profile } from '@/types'
 import { getUserTodayLocalDate } from '@/lib/utils/date'
 
 /**
@@ -133,8 +134,7 @@ export async function POST(request: NextRequest) {
         
         const { error: insertError } = await supabase
           .from('daily_entries')
-          .insert(entryData)
-
+          .insert(entryData as any)
         if (insertError) {
           console.error(`Error creating entry for user ${profile.id}:`, insertError)
           errors++
