@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getOrCreateProfile } from '@/lib/utils/profile'
 import { supabaseAdmin } from '@/lib/supabase/server'
 import { handleApiError } from '@/lib/errors/errorHandler'
-import { AuthenticationError, NotFoundError, ValidationError, DatabaseError } from '@/lib/errors/AppError'
+import { AuthenticationError, NotFoundError, DatabaseError } from '@/lib/errors/AppError'
 import { Database } from '@/types/database'
 import { z } from 'zod'
 
@@ -81,7 +81,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     const { data: updatedProfile, error: updateError } = await (supabaseAdmin
-      .from('profiles') as any)
+      .from('profiles') as any) // eslint-disable-line @typescript-eslint/no-explicit-any
       .update(updates)
       .eq('clerk_user_id', userId)
       .select()

@@ -78,7 +78,7 @@ export async function POST(request: Request) {
 
     if (isUpdate) {
       // Update existing review
-      const reviewId: string = (existingReviewResult.data as any).id
+      const reviewId: string = (existingReviewResult.data as any).id // eslint-disable-line @typescript-eslint/no-explicit-any
       
       const updateData: Database['public']['Tables']['weekly_reviews']['Update'] = {
         review_date: reviewData.review_date,
@@ -89,7 +89,7 @@ export async function POST(request: Request) {
       }
       
       const { data, error } = await (supabaseAdmin
-        .from('weekly_reviews') as any)
+        .from('weekly_reviews') as any) // eslint-disable-line @typescript-eslint/no-explicit-any
         .update(updateData)
         .eq('id', reviewId)
         .select()
@@ -120,7 +120,7 @@ export async function POST(request: Request) {
       }
       
       const { data, error } = await (supabaseAdmin
-        .from('weekly_reviews') as any)
+        .from('weekly_reviews') as any) // eslint-disable-line @typescript-eslint/no-explicit-any
         .insert(insertData)
         .select()
         .single()

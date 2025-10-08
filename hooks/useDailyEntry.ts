@@ -31,14 +31,49 @@ export function useDailyEntry(): UseDailyEntryReturn {
       const response = await fetch('/api/daily/today')
       
       if (!response.ok) {
-        throw new Error('Failed to fetch daily entry')
+        // Try to get error details from response
+        let errorMessage = 'Failed to fetch daily entry'
+        try {
+          const errorData = await response.json()
+          
+          // Handle nested error object format from errorHandler
+          if (errorData.error && typeof errorData.error === 'object') {
+            errorMessage = errorData.error.message || errorData.error.details || errorMessage
+            
+            // Add error code if available
+            if (errorData.error.code) {
+              errorMessage = `${errorData.error.code}: ${errorMessage}`
+            }
+          } 
+          // Handle direct string or simple object formats
+          else if (typeof errorData === 'string') {
+            errorMessage = errorData
+          } else if (errorData.error && typeof errorData.error === 'string') {
+            errorMessage = errorData.error
+          } else if (errorData.message) {
+            errorMessage = errorData.message
+          } else if (errorData.details) {
+            errorMessage = errorData.details
+          }
+        } catch (parseError) {
+          // If JSON parsing fails, use status text
+          console.error('Failed to parse error response:', parseError)
+          errorMessage = `${errorMessage} (${response.status}: ${response.statusText})`
+        }
+        throw new Error(errorMessage)
       }
 
       const data = await response.json()
       setEntry(data)
     } catch (err) {
       console.error('Error fetching entry:', err)
-      setError(err instanceof Error ? err.message : 'Failed to load entry')
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load entry'
+      setError(errorMessage)
+      
+      // Log additional debugging info
+      if (err instanceof Error && err.stack) {
+        console.error('Stack trace:', err.stack)
+      }
     } finally {
       setIsLoading(false)
     }

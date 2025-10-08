@@ -16,6 +16,9 @@ export interface Database {
           email: string
           timezone: string
           arc_start_date: string
+          deleted_at: string | null
+          last_login_at: string | null
+          metadata: Json
           created_at: string
           updated_at: string
         }
@@ -25,6 +28,9 @@ export interface Database {
           email: string
           timezone?: string
           arc_start_date?: string
+          deleted_at?: string | null
+          last_login_at?: string | null
+          metadata?: Json
           created_at?: string
           updated_at?: string
         }
@@ -34,6 +40,9 @@ export interface Database {
           email?: string
           timezone?: string
           arc_start_date?: string
+          deleted_at?: string | null
+          last_login_at?: string | null
+          metadata?: Json
           created_at?: string
           updated_at?: string
         }
@@ -51,6 +60,8 @@ export interface Database {
           notes: Json
           daily_score: number
           is_complete: boolean
+          completed_at: string | null
+          version: number
           created_at: string
           updated_at: string
         }
@@ -66,6 +77,8 @@ export interface Database {
           notes?: Json
           daily_score?: number
           is_complete?: boolean
+          completed_at?: string | null
+          version?: number
           created_at?: string
           updated_at?: string
         }
@@ -81,6 +94,8 @@ export interface Database {
           notes?: Json
           daily_score?: number
           is_complete?: boolean
+          completed_at?: string | null
+          version?: number
           created_at?: string
           updated_at?: string
         }

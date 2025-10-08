@@ -6,8 +6,6 @@ import { getOrCreateProfile } from '@/lib/utils/profile'
 import { createDefaultDailyEntry, fromDatabaseDailyEntry } from '@/lib/utils/typeConverters'
 import { handleApiError } from '@/lib/errors/errorHandler'
 import { AuthenticationError, NotFoundError, DatabaseError } from '@/lib/errors/AppError'
-import type { DailyEntry } from '@/types'
-import type { Database } from '@/types/database'
 
 export async function GET() {
   try {
@@ -31,32 +29,49 @@ export async function GET() {
     }
 
     // Get or create user profile
-    const profile = await getOrCreateProfile(userId, email)
+    let profile
+    try {
+      profile = await getOrCreateProfile(userId, email)
+    } catch (error) {
+      console.error('Failed to get or create profile:', error)
+      throw new DatabaseError(
+        `Failed to get or create profile: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        error
+      )
+    }
 
     // Get today's date in user's timezone
     const todayDate = getTodayDate(profile.timezone)
 
     // Check if entry exists for today
-    let { data: entry, error: entryError } = await supabaseAdmin
+    const { data: existingEntry, error: entryError } = await supabaseAdmin
       .from('daily_entries')
       .select('*')
       .eq('user_id', profile.id)
       .eq('entry_date', todayDate)
       .single()
 
+    let entry = existingEntry
+
     // If no entry exists, create one
     if (entryError || !entry) {
-      // Use type converter to create default entry (no 'as any')
+      // Log the error if it's not "not found"
+      if (entryError && entryError.code !== 'PGRST116') {
+        console.error('Error fetching daily entry:', entryError)
+      }
+
+      // Use type converter to create default entry
       const defaultEntry = createDefaultDailyEntry(profile.id, todayDate)
 
       const { data: newEntry, error: createError } = await (supabaseAdmin
-        .from('daily_entries') as any)
+        .from('daily_entries') as any) // eslint-disable-line @typescript-eslint/no-explicit-any
         .insert(defaultEntry)
         .select()
         .single()
 
       if (createError) {
-        throw new DatabaseError('Failed to create entry', createError)
+        console.error('Error creating daily entry:', createError)
+        throw new DatabaseError(`Failed to create entry: ${createError.message}`, createError)
       }
 
       if (!newEntry) {
@@ -73,6 +88,12 @@ export async function GET() {
       throw new DatabaseError('Entry not found')
     }
   } catch (error) {
+    // Enhanced error logging
+    console.error('Error in /api/daily/today:', {
+      error,
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+    })
     return handleApiError(error)
   }
 }

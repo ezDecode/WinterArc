@@ -147,7 +147,7 @@ export async function POST(request: NextRequest) {
         const entryData = createDefaultDailyEntry(profile.id, todayDate)
 
         const { error: insertError } = await (supabase
-          .from('daily_entries') as any)
+          .from('daily_entries') as any) // eslint-disable-line @typescript-eslint/no-explicit-any
           .insert(entryData)
         if (insertError) {
           console.error(`Error creating entry for user ${profile.id}:`, insertError)

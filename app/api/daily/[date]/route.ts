@@ -124,11 +124,16 @@ export async function PATCH(
     // Merge updates with existing entry for score calculation
     // Cast Json types to application types
     const updatedEntry: Partial<DailyEntry> = {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       study_blocks: updates.study_blocks ?? (existingEntry.study_blocks as any),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       reading: updates.reading ?? (existingEntry.reading as any),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       pushups: updates.pushups ?? (existingEntry.pushups as any),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       meditation: updates.meditation ?? (existingEntry.meditation as any),
       water_bottles: updates.water_bottles ?? existingEntry.water_bottles,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       notes: updates.notes ?? (existingEntry.notes as any),
     }
 
@@ -150,6 +155,7 @@ export async function PATCH(
     }
 
     // Update entry in database
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const queryBuilder: any = supabaseAdmin.from('daily_entries')
     const updateResult = await queryBuilder
       .update(updateData)

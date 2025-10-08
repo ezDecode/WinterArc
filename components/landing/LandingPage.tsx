@@ -5,18 +5,14 @@ import { useRouter } from 'next/navigation'
 import { AuthPromptModal } from './AuthPromptModal'
 import { 
   Zap, 
-  TrendingUp, 
   Calendar, 
   Target, 
-  Award, 
   BarChart3,
   BookOpen,
   Dumbbell,
   Droplets,
   Brain,
-  CheckCircle2,
   ArrowRight,
-  Star,
   Users,
   Clock,
   Sparkles,
@@ -25,7 +21,6 @@ import {
   Flame,
   ChevronRight,
   Check,
-  X
 } from 'lucide-react'
 
 const MODAL_DELAY = 5000 // 5 seconds
@@ -33,7 +28,6 @@ const MODAL_DELAY = 5000 // 5 seconds
 export function LandingPage() {
   const router = useRouter()
   const [showAuthModal, setShowAuthModal] = useState(false)
-  const [activeTab, setActiveTab] = useState(0)
 
   useEffect(() => {
     const visited = localStorage.getItem('winter-arc-visited')
@@ -44,14 +38,6 @@ export function LandingPage() {
       }, MODAL_DELAY)
       return () => clearTimeout(timer)
     }
-  }, [])
-
-  // Auto-rotate testimonials
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveTab((prev) => (prev + 1) % 3)
-    }, 4000)
-    return () => clearInterval(interval)
   }, [])
 
   const features = [
@@ -117,30 +103,6 @@ export function LandingPage() {
       title: 'Achieve Results',
       desc: 'Build streaks, earn points, and transform in 90 days.',
       icon: Trophy
-    },
-  ]
-
-  const testimonials = [
-    {
-      name: 'Alex Johnson',
-      role: 'Software Engineer',
-      image: '👨‍💻',
-      quote: 'Winter Arc helped me maintain consistency for 90 days straight. The daily tracking is so simple yet powerful!',
-      rating: 5
-    },
-    {
-      name: 'Sarah Chen',
-      role: 'Medical Student',
-      image: '👩‍⚕️',
-      quote: 'Perfect for tracking study hours and maintaining healthy habits during intense study periods. Game changer!',
-      rating: 5
-    },
-    {
-      name: 'Mike Rodriguez',
-      role: 'Fitness Coach',
-      image: '🏋️',
-      quote: 'The habit tracking system is incredible. My clients love using it for their transformation journeys.',
-      rating: 5
     },
   ]
 

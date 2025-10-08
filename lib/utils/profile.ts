@@ -2,7 +2,6 @@ import { supabaseAdmin } from '@/lib/supabase/server'
 import { DEFAULT_TIMEZONE } from '@/lib/constants/targets'
 import { toDatabaseProfile } from '@/lib/utils/typeConverters'
 import { DatabaseError } from '@/lib/errors/AppError'
-import type { Database } from '@/types/database'
 
 /**
  * Get or create user profile for Clerk user (Server-side version)
@@ -41,7 +40,7 @@ export async function getOrCreateProfile(
   })
 
   const { data: newProfile, error: createError } = await (supabaseAdmin
-    .from('profiles') as any)
+    .from('profiles') as any) // eslint-disable-line @typescript-eslint/no-explicit-any
     .insert(profileData)
     .select()
     .single()
