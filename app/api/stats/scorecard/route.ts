@@ -77,16 +77,18 @@ export async function GET() {
     // Use getUTCDay() since we're working with UTC dates
     const arcStartDayOfWeek = arcStartDate.getUTCDay()
     
-    // Calculate how many days to show (91 total days)
+    // Calculate total weeks needed: 90 days + padding at start
+    const totalDaysWithPadding = arcStartDayOfWeek + 90
+    const totalWeeksNeeded = Math.ceil(totalDaysWithPadding / 7)
     let dayOffset = 0
     
-    for (let weekIndex = 0; weekIndex < 13; weekIndex++) {
+    for (let weekIndex = 0; weekIndex < totalWeeksNeeded; weekIndex++) {
       const weekNumber = weekIndex + 1
       const days: ScorecardData['weeks'][0]['days'] = []
       let weekTotal = 0
 
-      // For the first week, we might need to add empty padding days before arc start
-      if (weekIndex === 0 && arcStartDayOfWeek > 0) {
+      // For the first week, add empty padding days before arc start
+      if (weekIndex === 0) {
         // Add empty padding days (Sunday = 0, Monday = 1, etc.)
         for (let i = 0; i < arcStartDayOfWeek; i++) {
           days.push({
@@ -101,7 +103,7 @@ export async function GET() {
       // Add actual days for this week
       const daysToAddThisWeek = weekIndex === 0 ? (7 - arcStartDayOfWeek) : 7
       
-      for (let i = 0; i < daysToAddThisWeek && dayOffset < 91; i++) {
+      for (let i = 0; i < daysToAddThisWeek && dayOffset < 90; i++) {
         const currentDate = new Date(arcStartDate)
         currentDate.setUTCDate(currentDate.getUTCDate() + dayOffset)
         
