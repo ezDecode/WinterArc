@@ -115,7 +115,7 @@ export async function PATCH(
 
     const userId_db: string = profile.id
 
-    // Get existing entry
+    // Get existing entry or create if doesn't exist
     const fetchResult = await supabaseAdmin
       .from('daily_entries')
       .select('*')
@@ -123,12 +123,45 @@ export async function PATCH(
       .eq('entry_date', date)
       .maybeSingle()
 
-    if (fetchResult.error) {
+    if (fetchResult.error && fetchResult.error.code !== 'PGRST116') {
       return NextResponse.json({ error: 'Database error', details: fetchResult.error.message }, { status: 500 })
     }
 
+    // If entry doesn't exist, create it first
     if (!fetchResult.data) {
-      return NextResponse.json({ error: 'Entry not found' }, { status: 404 })
+      const { createDefaultDailyEntry } = await import('@/lib/utils/typeConverters')
+      const defaultEntry = createDefaultDailyEntry(userId_db, date)
+      
+      const createResult = await (supabaseAdmin
+        .from('daily_entries') as any)
+        .insert(defaultEntry)
+        .select()
+        .single()
+      
+      if (createResult.error) {
+        console.error('Error creating entry:', createResult.error)
+        return NextResponse.json(
+          { 
+            error: 'Failed to create entry',
+            details: createResult.error.message
+          },
+          { status: 500 }
+        )
+      }
+      
+      // Now fetch the newly created entry
+      const newFetchResult = await supabaseAdmin
+        .from('daily_entries')
+        .select('*')
+        .eq('user_id', userId_db)
+        .eq('entry_date', date)
+        .single()
+      
+      if (newFetchResult.error || !newFetchResult.data) {
+        return NextResponse.json({ error: 'Entry creation failed' }, { status: 500 })
+      }
+      
+      fetchResult.data = newFetchResult.data
     }
 
     // Explicitly cast to the correct type

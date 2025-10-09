@@ -1,7 +1,6 @@
 /**
  * Email Reminder Service
- * 
- * Handles sending daily task reminder emails using Resend
+ * * Handles sending daily task reminder emails using Resend
  * with comprehensive rate limiting and timezone awareness
  */
 
@@ -42,7 +41,7 @@ function getSupabaseServiceClient() {
 
 // Email configuration
 const EMAIL_CONFIG = {
-  FROM_EMAIL: process.env.FROM_EMAIL || 'noreply@winterarc.com',
+  FROM_EMAIL: process.env.FROM_EMAIL || 'noreply@creativesky.me',
   FROM_NAME: 'Winter Arc',
   RATE_LIMIT_PER_USER_HOURS: 6,
   MAX_EMAILS_PER_DAY: 100, // Stay well under Resend's 3000/month limit
@@ -54,6 +53,7 @@ interface IncompleteTask {
   details: string
 }
 
+// [MODIFIED] Added currentDay for personalization
 interface EmailReminderData {
   userId: string
   email: string
@@ -61,6 +61,7 @@ interface EmailReminderData {
   incompleteTasks: IncompleteTask[]
   triggerType: 'on_demand' | 'inactivity'
   timezone: string
+  currentDay: number
 }
 
 interface EmailResult {
@@ -161,16 +162,33 @@ function generateEmailSubject(incompleteTasks: IncompleteTask[]): string {
 }
 
 /**
- * Generate HTML email content
+ * [REWRITTEN] Generate HTML email content with new design
  */
-function generateEmailHTML(userName: string, incompleteTasks: IncompleteTask[]): string {
+function generateEmailHTML(
+  userName: string, 
+  incompleteTasks: IncompleteTask[],
+  currentDay: number 
+): string {
+  
+  const getTaskIcon = (taskName: string): string => {
+    const lowerCaseName = taskName.toLowerCase();
+    if (lowerCaseName.includes('study') || lowerCaseName.includes('work')) return '💻';
+    if (lowerCaseName.includes('read')) return '📖';
+    if (lowerCaseName.includes('water') || lowerCaseName.includes('drink')) return '💧';
+    if (lowerCaseName.includes('gym') || lowerCaseName.includes('workout')) return '💪';
+    return '📋'; // Default icon
+  };
+
   const tasksList = incompleteTasks.map(task => 
-    `<li style="margin-bottom: 8px;">
-      <strong style="color: #7c3aed;">${task.name}</strong>
-      <br>
-      <span style="color: #6b7280; font-size: 14px;">${task.details}</span>
+    `<li style="margin-bottom: 12px; display: flex; align-items: flex-start; text-align: left;">
+      <span style="font-size: 20px; margin-right: 12px; margin-top: 2px; font-family: sans-serif;">${getTaskIcon(task.name)}</span>
+      <div>
+        <strong style="color: #e5e7eb; font-weight: 500;">${task.name}</strong>
+        <br>
+        <span style="color: #a1a1aa; font-size: 14px;">${task.details}</span>
+      </div>
     </li>`
-  ).join('')
+  ).join('');
 
   return `
     <!DOCTYPE html>
@@ -178,69 +196,79 @@ function generateEmailHTML(userName: string, incompleteTasks: IncompleteTask[]):
       <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
         <title>Winter Arc Daily Reminder</title>
       </head>
-      <body style="margin: 0; padding: 0; background-color: #000000; font-family: 'Inter', system-ui, -apple-system, sans-serif;">
-        <div style="max-width: 600px; margin: 0 auto; background-color: #0a0a0a; color: #ffffff;">
-          <!-- Header -->
-          <div style="background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%); padding: 30px 20px; text-align: center;">
-            <h1 style="margin: 0; font-size: 28px; font-weight: bold; color: white;">
-              ❄️ Winter Arc
+      <body style="margin: 0; padding: 0; background-color: #09090b; font-family: 'Inter Tight', system-ui, -apple-system, sans-serif;">
+        <div style="max-width: 600px; margin: 0 auto; background-color: #111113; color: #fafafa;">
+          <div style="background: #18181b; padding: 32px 24px; text-align: center; border-bottom: 1px solid #27272a;">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin: 0 auto 16px auto; color: #a855f7;">
+              <path d="M12 2L12.75 3.06L15.31 2.25L15.54 4.88L17.94 4.5L17.5 6.88L19.75 7.75L18.5 9.81L20.5 11L18.5 12.19L19.75 14.25L17.5 15.13L17.94 17.5L15.54 17.13L15.31 19.75L12.75 18.94L12 20L11.25 18.94L8.69 19.75L8.46 17.13L6.06 17.5L6.5 15.13L4.25 14.25L5.5 12.19L3.5 11L5.5 9.81L4.25 7.75L6.5 6.88L6.06 4.5L8.46 4.88L8.69 2.25L11.25 3.06L12 2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M12 8.01V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M12 12.01V12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M12 16.01V16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <h1 style="margin: 0; font-size: 28px; font-weight: 600; color: #fafafa; letter-spacing: -1px;">
+              Winter Arc
             </h1>
-            <p style="margin: 8px 0 0 0; color: rgba(255, 255, 255, 0.9); font-size: 16px;">
+            <p style="margin: 8px 0 0 0; color: #a1a1aa; font-size: 16px; font-weight: 400;">
               Your 90-day transformation continues
             </p>
           </div>
 
-          <!-- Content -->
-          <div style="padding: 30px 20px;">
-            <h2 style="color: #ffffff; font-size: 22px; margin-bottom: 16px;">
+          <div style="padding: 32px 24px;">
+            <h2 style="color: #fafafa; font-size: 24px; font-weight: 600; margin: 0 0 16px 0;">
               Hey ${userName}! 👋
             </h2>
             
-            <p style="color: #a3a3a3; line-height: 1.6; margin-bottom: 24px; font-size: 16px;">
-              You're doing great on your Winter Arc journey! I noticed you have 
-              ${incompleteTasks.length === 1 ? 'a task' : 'some tasks'} that could use your attention today.
+            <p style="color: #a1a1aa; line-height: 1.6; margin: 0 0 24px 0; font-size: 16px; font-weight: 400;">
+              You're doing great on your journey! Let's keep the momentum going by finishing today's tasks.
             </p>
+            
+            <div style="margin-bottom: 24px;">
+                <p style="font-size: 14px; color: #a1a1aa; margin: 0 0 8px 0; font-weight: 500;">Your Progress: Day ${currentDay} of 90</p>
+                <div style="background-color: #27272a; border-radius: 99px; overflow: hidden; height: 8px;">
+                    <div style="width: ${Math.round((currentDay / 90) * 100)}%; height: 8px; background: linear-gradient(90deg, #7c3aed 0%, #a855f7 100%);"></div>
+                </div>
+            </div>
 
-            <div style="background-color: #141414; border: 1px solid #262626; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
-              <h3 style="color: #ffffff; margin-bottom: 16px; font-size: 18px;">
-                📋 Incomplete Tasks
+            <div style="background-color: #18181b; border: 1px solid #27272a; border-radius: 12px; padding: 24px; margin-bottom: 24px;">
+              <h3 style="color: #fafafa; margin: 0 0 16px 0; font-size: 18px; font-weight: 600;">
+                Incomplete Tasks
               </h3>
-              <ul style="margin: 0; padding-left: 20px; color: #d1d5db;">
+              <ul style="margin: 0; padding: 0; list-style: none;">
                 ${tasksList}
               </ul>
             </div>
 
-            <p style="color: #a3a3a3; line-height: 1.6; margin-bottom: 24px; font-size: 16px;">
-              Every small action counts toward your bigger goals. You've got this! 💪
+            <p style="color: #a1a1aa; line-height: 1.6; margin: 0 0 24px 0; font-size: 16px; font-weight: 400;">
+              Every small action counts toward your bigger goals. You've got this!
             </p>
 
-            <!-- CTA Button -->
-            <div style="text-align: center; margin-bottom: 24px;">
-              <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://winterarc.com'}/today" 
-                 style="display: inline-block; background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%); color: white; text-decoration: none; padding: 14px 28px; border-radius: 10px; font-weight: 600; font-size: 16px;">
+            <div style="text-align: center; margin-bottom: 32px;">
+              <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://rebuild.creativesky.me'}/today" 
+                 style="display: inline-block; background: linear-gradient(90deg, #7c3aed 0%, #a855f7 100%); color: white; text-decoration: none; padding: 14px 28px; border-radius: 10px; font-weight: 600; font-size: 16px;">
                 Complete Your Tasks →
               </a>
             </div>
 
-            <!-- Stats -->
-            <div style="background-color: #141414; border: 1px solid #262626; border-radius: 12px; padding: 20px; text-align: center;">
-              <p style="color: #10b981; margin: 0; font-size: 14px; font-weight: 600;">
-                🔥 Keep your streak alive! Every day matters in your 90-day journey.
+            <div style="background-color: rgba(22, 163, 74, 0.1); border: 1px solid rgba(34, 197, 94, 0.2); border-radius: 12px; padding: 16px; text-align: center;">
+              <p style="color: #4ade80; margin: 0; font-size: 14px; font-weight: 500;">
+                🔥 Keep your streak alive! Every day matters.
               </p>
             </div>
           </div>
 
-          <!-- Footer -->
-          <div style="background-color: #141414; border-top: 1px solid #262626; padding: 20px; text-align: center;">
-            <p style="color: #737373; margin: 0; font-size: 12px;">
+          <div style="background-color: #18181b; border-top: 1px solid #27272a; padding: 24px; text-align: center;">
+            <p style="color: #71717a; margin: 0; font-size: 12px; font-weight: 400; line-height: 1.5;">
               You're receiving this because you have notifications enabled for your Winter Arc account.
               <br>
-              <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://winterarc.com'}/profile" 
-                 style="color: #7c3aed; text-decoration: underline;">Manage preferences</a>
+              <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://rebuild.creativesky.me'}/profile" 
+                 style="color: #a855f7; text-decoration: underline;">Manage preferences</a>
             </p>
-            <p style="color: #737373; margin: 12px 0 0 0; font-size: 12px;">
+            <p style="color: #71717a; margin: 12px 0 0 0; font-size: 12px; font-weight: 400;">
               Winter Arc • Transform in 90 days
             </p>
           </div>
@@ -270,13 +298,13 @@ ${tasksList}
 
 Every small action counts toward your bigger goals. You've got this!
 
-Complete your tasks: ${process.env.NEXT_PUBLIC_APP_URL || 'https://winterarc.com'}/today
+Complete your tasks: ${process.env.NEXT_PUBLIC_APP_URL || 'https://rebuild.creativesky.me'}/today
 
 Keep your streak alive! Every day matters in your 90-day journey.
 
 --
 You're receiving this because you have notifications enabled for your Winter Arc account.
-Manage preferences: ${process.env.NEXT_PUBLIC_APP_URL || 'https://winterarc.com'}/profile
+Manage preferences: ${process.env.NEXT_PUBLIC_APP_URL || 'https://rebuild.creativesky.me'}/profile
 
 Winter Arc • Transform in 90 days
   `.trim()
@@ -293,7 +321,8 @@ async function sendReminderEmail(data: EmailReminderData): Promise<EmailResult> 
     }
 
     const subject = generateEmailSubject(data.incompleteTasks)
-    const html = generateEmailHTML(data.userName, data.incompleteTasks)
+    // [MODIFIED] Pass currentDay to the HTML generator
+    const html = generateEmailHTML(data.userName, data.incompleteTasks, data.currentDay)
     const text = generateEmailText(data.userName, data.incompleteTasks)
 
     const resend = getResendClient()
