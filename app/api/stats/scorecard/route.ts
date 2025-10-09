@@ -36,10 +36,19 @@ export async function GET() {
     }
 
     // Calculate date range (arc_start_date to arc_start_date + 90 days)
-    const arcStartDate = new Date(profile.arc_start_date)
+    // Parse as UTC to avoid timezone shifts
+    const arcStartDate = new Date(profile.arc_start_date + 'T00:00:00Z')
     const arcEndDate = new Date(arcStartDate)
-    arcEndDate.setDate(arcEndDate.getDate() + 90)
-    const today = new Date()
+    arcEndDate.setUTCDate(arcEndDate.getUTCDate() + 90)
+    
+    // Get today's date in user's timezone as YYYY-MM-DD string
+    const todayStr = new Intl.DateTimeFormat('en-CA', {
+      timeZone: profile.timezone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).format(new Date())
+    const today = new Date(todayStr + 'T00:00:00Z')
 
     // Fetch all daily entries in the 90-day range
     const { data: entries, error: entriesError } = await supabaseAdmin
@@ -64,15 +73,37 @@ export async function GET() {
     // Build 13-week scorecard structure
     const weeks: ScorecardData['weeks'] = []
     
+    // Get the day of week the arc started (0 = Sunday, 1 = Monday, etc.)
+    // Use getUTCDay() since we're working with UTC dates
+    const arcStartDayOfWeek = arcStartDate.getUTCDay()
+    
+    // Calculate how many days to show (91 total days)
+    let dayOffset = 0
+    
     for (let weekIndex = 0; weekIndex < 13; weekIndex++) {
       const weekNumber = weekIndex + 1
       const days: ScorecardData['weeks'][0]['days'] = []
       let weekTotal = 0
 
-      for (let dayIndex = 0; dayIndex < 7; dayIndex++) {
-        const dayOffset = weekIndex * 7 + dayIndex
+      // For the first week, we might need to add empty padding days before arc start
+      if (weekIndex === 0 && arcStartDayOfWeek > 0) {
+        // Add empty padding days (Sunday = 0, Monday = 1, etc.)
+        for (let i = 0; i < arcStartDayOfWeek; i++) {
+          days.push({
+            date: '',
+            score: 0,
+            isFuture: false,
+            isEmpty: true, // Mark as padding
+          })
+        }
+      }
+
+      // Add actual days for this week
+      const daysToAddThisWeek = weekIndex === 0 ? (7 - arcStartDayOfWeek) : 7
+      
+      for (let i = 0; i < daysToAddThisWeek && dayOffset < 91; i++) {
         const currentDate = new Date(arcStartDate)
-        currentDate.setDate(currentDate.getDate() + dayOffset)
+        currentDate.setUTCDate(currentDate.getUTCDate() + dayOffset)
         
         const dateStr = currentDate.toISOString().split('T')[0]
         const isFuture = currentDate > today
@@ -87,6 +118,18 @@ export async function GET() {
         if (!isFuture && score > 0) {
           weekTotal += score
         }
+        
+        dayOffset++
+      }
+
+      // If this is the last week and we have fewer than 7 days, pad with empty days
+      while (days.length < 7) {
+        days.push({
+          date: '',
+          score: 0,
+          isFuture: false,
+          isEmpty: true,
+        })
       }
 
       weeks.push({

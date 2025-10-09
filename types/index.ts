@@ -104,6 +104,7 @@ export interface ScorecardData {
       date: string
       score: number
       isFuture: boolean
+      isEmpty?: boolean // For padding days before/after the 90-day arc
     }[]
     weekTotal: number
   }[]

@@ -33,7 +33,8 @@ export default function ScorecardPage() {
   }, [])
 
   // Color coding based on PRD thresholds
-  const getScoreColor = (score: number, isFuture: boolean) => {
+  const getScoreColor = (score: number, isFuture: boolean, isEmpty?: boolean) => {
+    if (isEmpty) return 'bg-transparent border-transparent cursor-default' // Padding days are invisible
     if (isFuture) return 'bg-[#262626] border-[#262626]'
     if (score === 5) return 'bg-[#10b981] border-[#10b981] cursor-pointer hover:opacity-80'
     if (score >= 3) return 'bg-[#f59e0b] border-[#f59e0b] cursor-pointer hover:opacity-80'
@@ -41,7 +42,8 @@ export default function ScorecardPage() {
     return 'bg-background border-border cursor-pointer hover:bg-surface'
   }
 
-  const getScoreTextColor = (score: number, isFuture: boolean) => {
+  const getScoreTextColor = (score: number, isFuture: boolean, isEmpty?: boolean) => {
+    if (isEmpty) return 'text-transparent' // Hide text for padding
     if (isFuture) return 'text-text-tertiary'
     if (score === 0) return 'text-text-tertiary'
     return 'text-white font-semibold'
@@ -116,7 +118,7 @@ export default function ScorecardPage() {
           {/* Header Row */}
           <div className="grid grid-cols-9 gap-2 sm:gap-3 mb-4 sm:mb-5">
             <div className="text-xs font-semibold text-text-secondary text-center">Week</div>
-            {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
+            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
               <div key={day} className="text-xs font-semibold text-text-secondary text-center">
                 {day}
               </div>
@@ -137,21 +139,30 @@ export default function ScorecardPage() {
 
                 {/* Days */}
                 {week.days.map((day, index) => (
-                  <Link
-                    key={index}
-                    href={day.isFuture ? '#' : `/today?date=${day.date}`}
-                    className={`
-                      aspect-square rounded-lg border transition-all duration-200
-                      flex items-center justify-center min-h-[36px] sm:min-h-[44px]
-                      ${getScoreColor(day.score, day.isFuture)} hover:scale-105
-                      ${getScoreColor(day.score, day.isFuture)}
-                    `}
-                    onClick={(e) => day.isFuture && e.preventDefault()}
-                  >
-                    <span className={`text-xs sm:text-sm ${getScoreTextColor(day.score, day.isFuture)}`}>
-                      {day.isFuture ? '—' : day.score}
-                    </span>
-                  </Link>
+                  day.isEmpty ? (
+                    <div
+                      key={index}
+                      className="aspect-square min-h-[36px] sm:min-h-[44px]"
+                    >
+                      {/* Empty padding cell */}
+                    </div>
+                  ) : (
+                    <Link
+                      key={index}
+                      href={day.isFuture ? '#' : `/today?date=${day.date}`}
+                      className={`
+                        aspect-square rounded-lg border transition-all duration-200
+                        flex items-center justify-center min-h-[36px] sm:min-h-[44px]
+                        ${getScoreColor(day.score, day.isFuture, day.isEmpty)} hover:scale-105
+                        ${getScoreColor(day.score, day.isFuture, day.isEmpty)}
+                      `}
+                      onClick={(e) => day.isFuture && e.preventDefault()}
+                    >
+                      <span className={`text-xs sm:text-sm ${getScoreTextColor(day.score, day.isFuture, day.isEmpty)}`}>
+                        {day.isFuture ? '—' : day.score}
+                      </span>
+                    </Link>
+                  )
                 ))}
 
                 {/* Week Total */}

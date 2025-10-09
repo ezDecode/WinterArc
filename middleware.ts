@@ -2,6 +2,7 @@ import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { triggerEmailCheckOnTodayVisit, updateUserLastLogin } from '@/lib/services/emailTrigger'
+import { ensureTodayEntryByClerkId } from '@/lib/utils/ensureTodayEntry'
 
 const isPublicRoute = createRouteMatcher([
   '/',
@@ -108,6 +109,12 @@ export default clerkMiddleware(async (auth, request) => {
 
   // Handle /today page visits for authenticated users
   if (userId && request.nextUrl.pathname === '/today') {
+    // Ensure today's entry exists (fire and forget)
+    // This creates the entry immediately so scorecard shows data
+    ensureTodayEntryByClerkId(userId).catch(() => {
+      // Suppress errors to prevent affecting user experience
+    })
+    
     // Update user's last login timestamp (fire and forget)
     updateUserLastLogin(userId).catch(() => {
       // Suppress errors to prevent affecting user experience

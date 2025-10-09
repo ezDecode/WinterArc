@@ -19,18 +19,29 @@ export default function OnboardingPage() {
       setLoading(true)
 
       // Update user's profile with timezone
-      const response = await fetch('/api/profile', {
+      const profileResponse = await fetch('/api/profile', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ timezone }),
       })
 
-      if (!response.ok) {
+      if (!profileResponse.ok) {
         throw new Error('Failed to save preferences')
       }
 
+      // Create today's entry to ensure user starts tracking immediately
+      // This prevents the issue where scorecard shows no data on first visit
+      const entryResponse = await fetch('/api/daily/today', {
+        method: 'GET',
+      })
+
+      if (!entryResponse.ok) {
+        // Log the error but don't block onboarding
+        console.error('Failed to create initial entry:', entryResponse.statusText)
+      }
+
       toast.success('Welcome to Winter Arc Tracker!', {
-        description: 'Your preferences have been saved',
+        description: 'Your preferences have been saved. Ready to start tracking!',
       })
 
       // Redirect to today's tracker

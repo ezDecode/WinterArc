@@ -2,6 +2,7 @@ import { supabaseAdmin } from '@/lib/supabase/server'
 import { DEFAULT_TIMEZONE } from '@/lib/constants/targets'
 import { toDatabaseProfile } from '@/lib/utils/typeConverters'
 import { DatabaseError } from '@/lib/errors/AppError'
+import { ensureTodayEntry } from '@/lib/utils/ensureTodayEntry'
 import type { Database } from '@/types/database'
 
 type Profile = Database['public']['Tables']['profiles']['Row']
@@ -103,5 +104,13 @@ export async function getOrCreateProfile(
 
   const newProfile = createResult.data as Profile
   console.log('[Profile] Successfully created new profile:', newProfile.id)
+  
+  // Create today's entry for the new user (fire and forget)
+  // This ensures new users immediately have an entry to track
+  ensureTodayEntry(newProfile.id, newProfile.timezone).catch(error => {
+    console.error('[Profile] Failed to create initial entry:', error)
+    // Don't throw - profile creation succeeded, entry creation is nice-to-have
+  })
+  
   return newProfile
 }

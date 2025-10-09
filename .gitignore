@@ -40,5 +40,5 @@ lib/supabase/*.sql
 *.tsbuildinfo
 next-env.d.ts
 
-# pnpm
-.pnpm-debug.log*
+# npm
+.npm-debug.log*

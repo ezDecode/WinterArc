@@ -147,7 +147,7 @@ Transform yourself in 90 days. Track daily habits, visualize progress, and stay 
   - Audit logging
 
 ### Development Tools
-- **[pnpm](https://pnpm.io/)** - Fast, disk space efficient package manager
+- **[npm](https://npm.io/)** - Fast, disk space efficient package manager
 - **[ESLint](https://eslint.org/)** - Code linting
 - **[PostCSS](https://postcss.org/)** - CSS processing
 - **[tsx](https://tsx.is/)** - TypeScript execution for tests
@@ -175,9 +175,9 @@ Transform yourself in 90 days. Track daily habits, visualize progress, and stay 
 Before you begin, ensure you have the following installed:
 
 - **Node.js 18+** ([Download](https://nodejs.org/))
-- **pnpm** - Install globally:
+- **npm** - Install globally:
   ```bash
-  npm install -g pnpm
+  npm install -g npm
   ```
 - **Git** ([Download](https://git-scm.com/))
 
@@ -198,7 +198,7 @@ cd winter-arc-tracker
 #### 2. Install Dependencies
 
 ```bash
-pnpm install
+npm install
 ```
 
 #### 3. Environment Variables Setup
@@ -310,7 +310,7 @@ Add the output to `CRON_SECRET` in `.env.local`
 #### 8. Run Development Server
 
 ```bash
-pnpm dev
+npm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
@@ -424,7 +424,7 @@ winter-arc-tracker/
 ├── tailwind.config.ts            # Tailwind config
 ├── postcss.config.mjs            # PostCSS config
 ├── package.json                  # Dependencies
-├── pnpm-lock.yaml                # Lock file
+├── npm-lock.yaml                # Lock file
 ├── vercel.json                   # Vercel deployment config
 └── README.md                     # This file
 ```
@@ -888,7 +888,7 @@ Winter Arc Tracker is optimized for Vercel deployment:
 #### 1. **Connect Repository**
 ```bash
 # Install Vercel CLI
-pnpm install -g vercel
+npm install -g vercel
 
 # Login
 vercel login
@@ -967,24 +967,24 @@ FROM_EMAIL=noreply@your-domain.com
 
 ```bash
 # Development
-pnpm dev              # Start dev server (localhost:3000)
-pnpm dev --turbo      # Start with Turbopack (experimental)
+npm dev              # Start dev server (localhost:3000)
+npm dev --turbo      # Start with Turbopack (experimental)
 
 # Building
-pnpm build            # Build for production
-pnpm start            # Start production server
+npm build            # Build for production
+npm start            # Start production server
 
 # Quality Assurance
-pnpm lint             # Run ESLint
-pnpm lint --fix       # Fix linting issues
-pnpm type-check       # Run TypeScript compiler check
+npm lint             # Run ESLint
+npm lint --fix       # Fix linting issues
+npm type-check       # Run TypeScript compiler check
 
 # Testing
-pnpm test             # Run unit tests
-pnpm test:watch       # Run tests in watch mode
+npm test             # Run unit tests
+npm test:watch       # Run tests in watch mode
 
 # Database
-pnpm db:types         # Generate TypeScript types from Supabase
+npm db:types         # Generate TypeScript types from Supabase
 
 # Deployment
 vercel                # Deploy to Vercel
@@ -999,13 +999,13 @@ vercel --prod         # Deploy to production
 
 ```bash
 # Run all tests
-pnpm test
+npm test
 
 # Run specific test file
-pnpm test __tests__/utils/scoring.test.ts
+npm test __tests__/utils/scoring.test.ts
 
 # Watch mode
-pnpm test:watch
+npm test:watch
 ```
 
 ### Test Coverage
@@ -1101,8 +1101,8 @@ This is a personal project, but suggestions and bug reports are welcome!
 1. **Fork the repository**
 2. **Create a feature branch**: `git checkout -b feature/your-feature-name`
 3. **Make your changes**
-4. **Run tests**: `pnpm test`
-5. **Lint code**: `pnpm lint`
+4. **Run tests**: `npm test`
+5. **Lint code**: `npm lint`
 6. **Commit**: `git commit -m "feat: add amazing feature"`
 7. **Push**: `git push origin feature/your-feature-name`
 8. **Create a Pull Request**
