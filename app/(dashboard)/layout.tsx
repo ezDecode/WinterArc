@@ -4,13 +4,22 @@ import { UserButton } from '@clerk/nextjs'
 import Link from 'next/link'
 import { ReactNode, useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
-import { Menu, X, Home, BarChart3, TrendingUp, Calendar } from 'lucide-react'
+import { Menu, X, Home, BarChart3, TrendingUp, Calendar, User } from 'lucide-react'
 import { AnimatedTabs } from '@/components/ui/AnimatedTabs'
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
+  const [isClerkConfigured, setIsClerkConfigured] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const pathname = usePathname()
+
+  // Check Clerk configuration
+  useEffect(() => {
+    const publishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+    if (publishableKey && publishableKey !== 'pk_test_xxxxx' && publishableKey.length > 20) {
+      setIsClerkConfigured(true)
+    }
+  }, [])
 
   // Handle scroll effect
   useEffect(() => {
@@ -107,13 +116,19 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               </button>
 
               {/* User Menu */}
-              <UserButton 
-                appearance={{
-                  elements: {
-                    avatarBox: 'w-8 h-8 sm:w-9 sm:h-9',
-                  },
-                }}
-              />
+              {isClerkConfigured ? (
+                <UserButton 
+                  appearance={{
+                    elements: {
+                      avatarBox: 'w-8 h-8 sm:w-9 sm:h-9',
+                    },
+                  }}
+                />
+              ) : (
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-surface border border-border flex items-center justify-center">
+                  <User className="w-4 h-4 text-text-secondary" />
+                </div>
+              )}
             </div>
           </div>
         </div>

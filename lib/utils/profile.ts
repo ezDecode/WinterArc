@@ -70,7 +70,13 @@ export async function getOrCreateProfile(
   }
 
   // STEP 3: Only create if truly doesn't exist
-  if (profileResult.error?.code !== 'PGRST116' && emailResult.error?.code !== 'PGRST116') {
+  // Check if there was a real database error (not just "not found")
+  const hasRealError = (
+    (profileResult.error && profileResult.error.code !== 'PGRST116') ||
+    (emailResult.error && emailResult.error.code !== 'PGRST116')
+  )
+  
+  if (hasRealError) {
     throw new DatabaseError(
       `Failed to fetch profile: ${profileResult.error?.message || emailResult.error?.message}`,
       profileResult.error || emailResult.error

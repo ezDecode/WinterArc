@@ -1,11 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useUser } from '@clerk/nextjs'
 import { toast } from 'sonner'
 
-export default function OnboardingPage() {
+function OnboardingContent() {
   const router = useRouter()
   const { user } = useUser()
   const [loading, setLoading] = useState(false)
@@ -209,4 +209,31 @@ export default function OnboardingPage() {
       </div>
     </div>
   )
+}
+
+export default function OnboardingPage() {
+  const [isClerkConfigured, setIsClerkConfigured] = useState(false)
+
+  useEffect(() => {
+    // Check if Clerk is properly configured
+    if (typeof window !== 'undefined') {
+      const publishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+      if (publishableKey && publishableKey !== 'pk_test_xxxxx' && publishableKey.length > 20) {
+        setIsClerkConfigured(true)
+      }
+    }
+  }, [])
+
+  if (!isClerkConfigured) {
+    return (
+      <div className="min-h-screen bg-red-50 flex items-center justify-center p-4">
+        <div className="max-w-md text-center">
+          <h1 className="text-2xl font-bold text-red-800 mb-4">⚠️ Configuration Required</h1>
+          <p className="text-red-700">Authentication service not configured. Please check your environment variables.</p>
+        </div>
+      </div>
+    )
+  }
+
+  return <OnboardingContent />
 }

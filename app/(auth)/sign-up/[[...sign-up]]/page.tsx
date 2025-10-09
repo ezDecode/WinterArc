@@ -13,6 +13,7 @@ export default function SignUpPage() {
           </p>
         </div>
         <SignUp 
+          fallbackRedirectUrl="/today"
           appearance={{
             elements: {
               rootBox: 'mx-auto',

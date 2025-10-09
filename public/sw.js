@@ -85,7 +85,18 @@ self.addEventListener('fetch', (event) => {
     return
   }
 
-  // Stale-while-revalidate for API GET requests
+  // Network-only for user-specific API calls to prevent cached user data issues
+  if (
+    url.pathname.includes('/api/daily/') ||
+    url.pathname.includes('/api/profile') ||
+    url.pathname.includes('/api/stats/') ||
+    url.pathname.includes('/api/reviews/')
+  ) {
+    event.respondWith(fetch(request))
+    return
+  }
+
+  // Stale-while-revalidate for non-sensitive API GET requests only
   if (url.pathname.includes('/api/') && request.method === 'GET') {
     event.respondWith(
       caches.open(RUNTIME_CACHE)
@@ -147,10 +158,15 @@ self.addEventListener('fetch', (event) => {
       fetch(request)
         .then((networkResponse) => {
           // Cache successful page responses
+          // Clone BEFORE checking properties to avoid consuming the response
           if (networkResponse && networkResponse.status === 200) {
+            const responseClone = networkResponse.clone()
             caches.open(RUNTIME_CACHE)
               .then((cache) => {
-                cache.put(request, networkResponse.clone())
+                cache.put(request, responseClone)
+              })
+              .catch((error) => {
+                console.error('[SW] Failed to cache navigation response:', error)
               })
           }
           return networkResponse

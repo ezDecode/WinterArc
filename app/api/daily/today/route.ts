@@ -9,6 +9,19 @@ import { AuthenticationError, NotFoundError, DatabaseError } from '@/lib/errors/
 
 export async function GET() {
   try {
+    // Validate Clerk configuration before proceeding
+    if (!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || 
+        !process.env.CLERK_SECRET_KEY ||
+        process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY === 'pk_test_xxxxx') {
+      return NextResponse.json(
+        { 
+          error: 'Authentication service not configured',
+          details: 'Invalid Clerk credentials'
+        }, 
+        { status: 503 }
+      )
+    }
+    
     const { userId } = await auth()
 
     if (!userId) {
