@@ -116,6 +116,8 @@ export async function PATCH(
     const userId_db: string = profile.id
 
     // Get existing entry or create if doesn't exist
+    let existingEntry: Database['public']['Tables']['daily_entries']['Row']
+    
     const fetchResult = await supabaseAdmin
       .from('daily_entries')
       .select('*')
@@ -132,8 +134,10 @@ export async function PATCH(
       const { createDefaultDailyEntry } = await import('@/lib/utils/typeConverters')
       const defaultEntry = createDefaultDailyEntry(userId_db, date)
       
-      const createResult = await (supabaseAdmin
-        .from('daily_entries') as any)
+      const createResult = await (
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        supabaseAdmin.from('daily_entries') as any
+      )
         .insert(defaultEntry)
         .select()
         .single()
@@ -157,15 +161,26 @@ export async function PATCH(
         .eq('entry_date', date)
         .single()
       
-      if (newFetchResult.error || !newFetchResult.data) {
-        return NextResponse.json({ error: 'Entry creation failed' }, { status: 500 })
+      if (newFetchResult.error) {
+        return NextResponse.json({ 
+          error: 'Entry creation failed', 
+          details: newFetchResult.error.message
+        }, { status: 500 })
       }
       
-      fetchResult.data = newFetchResult.data
+      // TypeScript workaround: explicitly type the data
+      const newData = newFetchResult.data as unknown as Database['public']['Tables']['daily_entries']['Row'] | null
+      
+      if (!newData) {
+        return NextResponse.json({ 
+          error: 'Entry creation failed - no data returned'
+        }, { status: 500 })
+      }
+      
+      existingEntry = newData
+    } else {
+      existingEntry = fetchResult.data as Database['public']['Tables']['daily_entries']['Row']
     }
-
-    // Explicitly cast to the correct type
-    const existingEntry = fetchResult.data as Database['public']['Tables']['daily_entries']['Row']
 
     // Merge updates with existing entry for score calculation
     // Cast Json types to application types
@@ -201,9 +216,10 @@ export async function PATCH(
     }
 
     // Update entry in database
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const queryBuilder: any = supabaseAdmin.from('daily_entries')
-    const updateResult = await queryBuilder
+    const updateResult = await (
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      supabaseAdmin.from('daily_entries') as any
+    )
       .update(updateData)
       .eq('user_id', userId_db)
       .eq('entry_date', date)

@@ -10,7 +10,7 @@ import type { Database } from '@/types/database'
 import type { DailyEntry } from '@/types'
 import { sendTaskReminderEmail } from './email'
 import { getIncompleteTasks, hasIncompleteTasks, shouldSkipReminder } from '@/lib/utils/taskCompletion'
-import { getUserTodayLocalDate } from '@/lib/utils/date'
+import { getUserTodayLocalDate, getDayNumber } from '@/lib/utils/date'
 
 // Create Supabase admin client for service operations
 function getSupabaseServiceClient() {
@@ -125,13 +125,19 @@ async function processEmailReminderTrigger(userId: string): Promise<void> {
         { name: 'Water Intake', details: '8 water bottles need to be consumed' }
       ]
 
+      // Calculate current day in the arc
+      const arcStartDate = new Date((profile as any).arc_start_date) // eslint-disable-line @typescript-eslint/no-explicit-any
+      const todayDate = new Date()
+      const currentDay = getDayNumber(arcStartDate, todayDate)
+
       await sendTaskReminderEmail({
         userId: (profile as any).id, // eslint-disable-line @typescript-eslint/no-explicit-any
         email: (profile as any).email, // eslint-disable-line @typescript-eslint/no-explicit-any
         userName: extractUserName(profile),
         incompleteTasks: allTasks,
         triggerType: 'on_demand',
-        timezone: (profile as any).timezone || 'America/New_York' // eslint-disable-line @typescript-eslint/no-explicit-any
+        timezone: (profile as any).timezone || 'America/New_York', // eslint-disable-line @typescript-eslint/no-explicit-any
+        currentDay
       })
       return
     }
@@ -152,13 +158,19 @@ async function processEmailReminderTrigger(userId: string): Promise<void> {
     const incompleteTasks = getIncompleteTasks(todayEntry)
     console.log(`Sending reminder for ${incompleteTasks.length} incomplete tasks to:`, userId)
 
+    // Calculate current day in the arc
+    const arcStartDate = new Date((profile as any).arc_start_date) // eslint-disable-line @typescript-eslint/no-explicit-any
+    const todayDate = new Date()
+    const currentDay = getDayNumber(arcStartDate, todayDate)
+
     await sendTaskReminderEmail({
       userId: (profile as any).id, // eslint-disable-line @typescript-eslint/no-explicit-any
       email: (profile as any).email, // eslint-disable-line @typescript-eslint/no-explicit-any
       userName: extractUserName(profile),
       incompleteTasks,
       triggerType: 'on_demand',
-      timezone: (profile as any).timezone || 'America/New_York' // eslint-disable-line @typescript-eslint/no-explicit-any
+      timezone: (profile as any).timezone || 'America/New_York', // eslint-disable-line @typescript-eslint/no-explicit-any
+      currentDay
     })
 
   } catch (error) {

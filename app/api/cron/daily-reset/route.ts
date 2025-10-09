@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import { timingSafeEqual } from 'crypto'
 import type { Database } from '@/types/database'
 import type { Profile } from '@/types'
-import { getUserTodayLocalDate } from '@/lib/utils/date'
+import { getUserTodayLocalDate, getDayNumber } from '@/lib/utils/date'
 import { createDefaultDailyEntry } from '@/lib/utils/typeConverters'
 import { getUsersForInactivityReminders, sendTaskReminderEmail } from '@/lib/services/email'
 import { getIncompleteTasks, hasIncompleteTasks } from '@/lib/utils/taskCompletion'
@@ -177,6 +177,17 @@ export async function POST(request: NextRequest) {
           const userTimezone = inactiveUser.timezone || defaultTimezone
           const todayDate = getUserTodayLocalDate(userTimezone)
 
+          // Get user profile for arc_start_date
+          const { data: userProfile } = await supabase
+            .from('profiles')
+            .select('arc_start_date')
+            .eq('id', inactiveUser.user_id)
+            .single() as { data: { arc_start_date: string } | null }
+
+          // Calculate current day in the arc
+          const arcStartDate = userProfile?.arc_start_date ? new Date(userProfile.arc_start_date) : new Date()
+          const currentDay = getDayNumber(arcStartDate, new Date(todayDate))
+
           // Get today's entry to check for incomplete tasks
           const { data: todayEntry, error: entryError } = await supabase
             .from('daily_entries')
@@ -218,7 +229,8 @@ export async function POST(request: NextRequest) {
               userName,
               incompleteTasks,
               triggerType: 'inactivity',
-              timezone: userTimezone
+              timezone: userTimezone,
+              currentDay
             })
 
             if (result.success) {

@@ -27,7 +27,7 @@ export async function ensureTodayEntry(
     const todayDate = getUserTodayLocalDate(timezone)
 
     // Check if entry exists
-    const { data: existingEntry, error: checkError } = await supabaseAdmin
+    const { data: existingEntry } = await supabaseAdmin
       .from('daily_entries')
       .select('id')
       .eq('user_id', userId)
