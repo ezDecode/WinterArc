@@ -40,7 +40,7 @@ export function AnimatedTabs({ tabs, activeTab, className = '' }: AnimatedTabsPr
           left: `${offsetLeft}px`,
           width: `${offsetWidth}px`,
         })
-        console.log('Hover style updated:', { left: offsetLeft, width: offsetWidth, index: hoveredIndex })
+        //console.log('Hover style updated:', { left: offsetLeft, width: offsetWidth, index: hoveredIndex })
       }
     }
   }, [hoveredIndex])

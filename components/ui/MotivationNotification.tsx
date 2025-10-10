@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect, useCallback, memo } from 'react'
-import { X, Sparkles } from 'lucide-react'
+import { useState, useEffect, useRef, memo } from 'react'
+import { X } from 'lucide-react'
 import type { MotivationMessage } from '@/lib/utils/motivation'
 import { isHighImpactMessage } from '@/lib/utils/motivation'
 
@@ -22,35 +22,61 @@ export const MotivationNotification = memo(function MotivationNotification({
   compact = false,
   className = ''
 }: MotivationNotificationProps) {
-  const [isVisible, setIsVisible] = useState(false)
-  const [isAnimating, setIsAnimating] = useState(false)
+  const [isExiting, setIsExiting] = useState(false)
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const isInitialMount = useRef(true)
 
-  const handleClose = useCallback(() => {
-    setIsAnimating(false)
+  const handleClose = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+    }
+    setIsExiting(true)
     setTimeout(() => {
-      setIsVisible(false)
       onClose?.()
-    }, 300) // Match animation duration
-  }, [onClose])
+    }, 250) // Match exit animation duration
+  }
 
   useEffect(() => {
-    if (message) {
-      setIsVisible(true)
-      setIsAnimating(true)
-      
-      // Auto hide after delay
+    if (message && !isExiting) {
+      // Clear any existing timeout
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+
+      // Set up auto-hide timer
       if (autoHideDelay > 0) {
-        const hideTimer = setTimeout(() => {
-          handleClose()
+        timeoutRef.current = setTimeout(() => {
+          if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current)
+          }
+          setIsExiting(true)
+          setTimeout(() => {
+            onClose?.()
+          }, 250)
         }, autoHideDelay)
-        
-        return () => clearTimeout(hideTimer)
+      }
+
+      // Mark as not initial mount after first render
+      if (isInitialMount.current) {
+        isInitialMount.current = false
       }
     }
-  }, [message, autoHideDelay, handleClose])
 
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+    }
+  }, [message, autoHideDelay, isExiting, onClose])
 
-  if (!message || !isVisible) {
+  // Reset exit state when message changes
+  useEffect(() => {
+    if (message) {
+      setIsExiting(false)
+    }
+  }, [message])
+
+  if (!message) {
     return null
   }
 
@@ -58,31 +84,35 @@ export const MotivationNotification = memo(function MotivationNotification({
     switch (message.intensity) {
       case 'celebration':
         return {
-          container: 'bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-orange-500/20 border-purple-400/50 shadow-2xl shadow-purple-500/20',
-          text: 'text-purple-100 font-bold',
-          emoji: 'text-3xl animate-bounce',
-          particle: true
+          container: 'bg-surface border-purple-500/30 shadow-xl shadow-purple-500/5',
+          accent: 'border-l-4 border-l-purple-500',
+          text: 'text-text-primary font-semibold',
+          emoji: 'text-2xl',
+          glow: 'shadow-lg shadow-purple-500/10'
         }
       case 'high':
         return {
-          container: 'bg-gradient-to-r from-green-500/15 to-emerald-500/15 border-green-400/40 shadow-lg shadow-green-500/10',
-          text: 'text-green-100 font-semibold',
-          emoji: 'text-2xl',
-          particle: true
+          container: 'bg-surface border-success/30 shadow-lg shadow-success/5',
+          accent: 'border-l-4 border-l-success',
+          text: 'text-text-primary font-medium',
+          emoji: 'text-xl',
+          glow: 'shadow-md shadow-success/8'
         }
       case 'medium':
         return {
-          container: 'bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border-blue-400/30 shadow-md shadow-blue-500/10',
-          text: 'text-blue-100 font-medium',
-          emoji: 'text-xl',
-          particle: false
+          container: 'bg-surface border-blue-500/25 shadow-md shadow-blue-500/5',
+          accent: 'border-l-4 border-l-blue-500',
+          text: 'text-text-primary font-medium',
+          emoji: 'text-lg',
+          glow: 'shadow-sm shadow-blue-500/5'
         }
       case 'low':
         return {
-          container: 'bg-gradient-to-r from-gray-500/10 to-slate-500/10 border-gray-400/20',
-          text: 'text-gray-200',
-          emoji: 'text-lg',
-          particle: false
+          container: 'bg-surface border-border',
+          accent: 'border-l-4 border-l-text-tertiary',
+          text: 'text-text-secondary',
+          emoji: 'text-base',
+          glow: ''
         }
     }
   }
@@ -104,45 +134,44 @@ export const MotivationNotification = memo(function MotivationNotification({
 
   const styles = getIntensityStyles()
   const isHighImpact = isHighImpactMessage(message)
+  const isEntering = !isInitialMount.current
 
   return (
     <div className={`fixed top-4 right-4 z-50 ${className}`}>
       <div
         className={`
-          relative overflow-hidden rounded-xl border backdrop-blur-sm transition-all duration-300 max-w-sm
+          relative rounded-xl border backdrop-blur-sm max-w-sm transition-all duration-250
           ${styles.container}
-          ${isAnimating ? 'animate-in slide-in-from-right-full' : 'animate-out slide-out-to-right-full'}
+          ${styles.accent}
+          ${styles.glow}
           ${compact ? 'p-3' : 'p-4'}
-          ${isHighImpact ? 'animate-pulse' : ''}
+          ${isExiting 
+            ? 'transform translate-x-full opacity-0 scale-95' 
+            : isEntering 
+              ? 'transform translate-x-0 opacity-100 scale-100 animate-in' 
+              : 'transform translate-x-0 opacity-100 scale-100'
+          }
         `}
         role="alert"
         aria-live={isHighImpact ? 'assertive' : 'polite'}
       >
-        {/* Particle Effect for High Impact Messages */}
-        {styles.particle && (
-          <div className="absolute inset-0 pointer-events-none">
-            <Sparkles className="absolute top-2 left-2 w-4 h-4 text-yellow-400 animate-pulse" />
-            <Sparkles className="absolute top-3 right-6 w-3 h-3 text-pink-400 animate-pulse delay-100" />
-            <Sparkles className="absolute bottom-2 left-4 w-3 h-3 text-blue-400 animate-pulse delay-200" />
-          </div>
-        )}
 
         {/* Close Button */}
         {showCloseButton && (
           <button
             onClick={handleClose}
-            className="absolute top-2 right-2 p-1 rounded-lg bg-black/20 hover:bg-black/40 text-white/60 hover:text-white transition-all duration-200 z-10"
+            className="absolute top-3 right-3 p-1.5 rounded-lg bg-background/80 hover:bg-background text-text-tertiary hover:text-text-primary transition-colors duration-200 z-10"
             aria-label="Close notification"
           >
-            <X className="w-4 h-4" />
+            <X className="w-3.5 h-3.5" />
           </button>
         )}
 
         {/* Content */}
-        <div className={`flex items-start gap-3 ${showCloseButton ? 'pr-8' : ''}`}>
+        <div className={`flex items-start gap-3 ${showCloseButton ? 'pr-10' : ''}`}>
           {/* Message Icon/Emoji */}
-          <div className="flex-shrink-0 flex items-center justify-center">
-            <div className={`${styles.emoji} ${message.intensity === 'celebration' ? 'animate-spin' : ''}`}>
+          <div className="flex-shrink-0 flex items-center justify-center pt-0.5">
+            <div className={`${styles.emoji} transition-all duration-200 ${message.intensity === 'celebration' ? 'animate-pulse' : ''}`}>
               {message.emoji}
             </div>
           </div>
@@ -150,81 +179,41 @@ export const MotivationNotification = memo(function MotivationNotification({
           {/* Message Content */}
           <div className="flex-1 min-w-0">
             {/* Message Text */}
-            <div className={`${styles.text} ${compact ? 'text-sm' : 'text-base'} leading-tight`}>
+            <div className={`${styles.text} ${compact ? 'text-sm' : 'text-base'} leading-relaxed`}>
               {message.message}
             </div>
 
             {/* Type Badge */}
             {!compact && (
-              <div className="mt-2 flex items-center gap-2">
-                <span className="text-xs opacity-75 flex items-center gap-1">
+              <div className="mt-2.5 flex items-center gap-2">
+                <span className="text-xs text-text-tertiary flex items-center gap-1.5 bg-background/50 px-2 py-1 rounded-md">
                   <span>{getTypeIcon()}</span>
-                  <span className="capitalize">{message.type}</span>
+                  <span className="capitalize font-medium">{message.type}</span>
                 </span>
-                {message.intensity === 'celebration' && (
-                  <div className="flex gap-1">
-                    <div className="w-2 h-2 bg-yellow-400 rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-pink-400 rounded-full animate-bounce delay-100"></div>
-                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce delay-200"></div>
-                  </div>
-                )}
               </div>
             )}
           </div>
         </div>
 
-        {/* Progress Bar for Auto Hide */}
-        {autoHideDelay > 0 && (
-          <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/20">
-            <div
-              className="h-full bg-gradient-to-r from-white/40 to-white/20"
+        {/* Subtle Progress Indicator */}
+        {autoHideDelay > 0 && !isExiting && (
+          <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-border/30 overflow-hidden">
+            <div 
+              className="h-full bg-text-tertiary/60 transition-all linear"
               style={{
-                animation: `shrink-width ${autoHideDelay}ms linear forwards`
+                width: '100%',
+                animation: `progress-shrink ${autoHideDelay}ms linear forwards`
               }}
             />
           </div>
         )}
       </div>
 
-      {/* Custom CSS for animations */}
+      {/* Minimal CSS for progress animation */}
       <style jsx>{`
-        @keyframes shrink-width {
-          from {
-            width: 100%;
-          }
-          to {
-            width: 0%;
-          }
-        }
-
-        .animate-in {
-          animation: slideInFromRight 300ms ease-out forwards;
-        }
-
-        .animate-out {
-          animation: slideOutToRight 300ms ease-in forwards;
-        }
-
-        @keyframes slideInFromRight {
-          from {
-            transform: translateX(100%);
-            opacity: 0;
-          }
-          to {
-            transform: translateX(0);
-            opacity: 1;
-          }
-        }
-
-        @keyframes slideOutToRight {
-          from {
-            transform: translateX(0);
-            opacity: 1;
-          }
-          to {
-            transform: translateX(100%);
-            opacity: 0;
-          }
+        @keyframes progress-shrink {
+          from { width: 100%; }
+          to { width: 0%; }
         }
       `}</style>
     </div>
@@ -264,9 +253,9 @@ export const TaskCompletionNotification = memo(function TaskCompletionNotificati
     <MotivationNotification
       message={message}
       onClose={onClose}
-      autoHideDelay={3000}
+      autoHideDelay={3500}
       compact={false}
-      className="animate-bounce-once"
+      showCloseButton={true}
     />
   )
 })
@@ -281,6 +270,7 @@ export const ProgressNotification = memo(function ProgressNotification({
       onClose={onClose}
       autoHideDelay={2500}
       compact={true}
+      showCloseButton={false}
     />
   )
 })
@@ -293,10 +283,9 @@ export const CelebrationNotification = memo(function CelebrationNotification({
     <MotivationNotification
       message={message}
       onClose={onClose}
-      autoHideDelay={6000}
+      autoHideDelay={8000}
       compact={false}
-      showCloseButton={false}
-      className="celebration-entrance"
+      showCloseButton={true}
     />
   )
 })
