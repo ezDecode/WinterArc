@@ -1,9 +1,11 @@
 'use client'
 
-import { useState, Suspense } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useDailyEntry } from '@/hooks/useDailyEntry'
 import { useKeyboardShortcuts, useTodayShortcuts } from '@/hooks/useKeyboardShortcuts'
+import { getDailyCompletionCelebration } from '@/lib/utils/motivation'
+import { CelebrationNotification, useMotivationNotification } from '@/components/ui/MotivationNotification'
 import { StudyBlocksTracker } from '@/components/tracker/StudyBlocksTracker'
 import { ReadingTracker } from '@/components/tracker/ReadingTracker'
 import { PushupsTracker } from '@/components/tracker/PushupsTracker'
@@ -29,6 +31,16 @@ function TodayContent() {
   const { entry, isLoading, error, updateEntry, refreshEntry, isSaving, lastSaved } =
     useDailyEntry(dateParam || undefined)
   const [showShortcuts, setShowShortcuts] = useState(false)
+  const { currentMessage: globalMotivationMessage, showMessage: showGlobalMotivation, clearMessage: clearGlobalMotivation } = useMotivationNotification()
+
+  // Track daily completion for celebration
+  useEffect(() => {
+    if (entry && entry.is_complete && entry.daily_score === 5) {
+      // Show celebration for perfect day!
+      const celebrationMessage = getDailyCompletionCelebration()
+      showGlobalMotivation(celebrationMessage)
+    }
+  }, [entry, showGlobalMotivation])
 
   // Keyboard shortcuts - must be called before any conditional returns
   const shortcuts = useTodayShortcuts(
@@ -76,6 +88,14 @@ function TodayContent() {
 
   return (
     <div className="space-y-6 sm:space-y-8">
+      {/* Global Motivation Notification */}
+      {globalMotivationMessage && globalMotivationMessage.intensity === 'celebration' && (
+        <CelebrationNotification
+          message={globalMotivationMessage}
+          onClose={clearGlobalMotivation}
+        />
+      )}
+      
       {/* Keyboard Shortcuts Modal */}
       <KeyboardShortcutsModal
         isOpen={showShortcuts}
