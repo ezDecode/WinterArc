@@ -55,13 +55,20 @@ export async function GET() {
     console.log('[Scorecard] Today (user TZ):', todayStr)
     console.log('[Scorecard] Today (UTC):', today.toISOString())
     console.log('[Scorecard] Arc start:', profile.arc_start_date)
+    console.log('[Scorecard] Arc end:', arcEndDate.toISOString().split('T')[0])
 
-    // Fetch all daily entries in the 90-day range
+    // Calculate the upper bound: min(arcEndDate, today)
+    const upperBoundDate = arcEndDate < today ? arcEndDate : today
+    const upperBoundStr = upperBoundDate.toISOString().split('T')[0]
+    console.log('[Scorecard] Upper bound for query:', upperBoundStr)
+    
+    // Fetch all daily entries in the 90-day range, up to today or arc end (whichever is earlier)
     const { data: entries, error: entriesError } = await supabaseAdmin
       .from('daily_entries')
       .select('entry_date, daily_score')
       .eq('user_id', profile.id)
       .gte('entry_date', profile.arc_start_date)
+      .lte('entry_date', upperBoundStr)
       .order('entry_date', { ascending: true })
 
     if (entriesError) {
