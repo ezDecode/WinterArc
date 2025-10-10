@@ -302,16 +302,56 @@ export async function GET(
 
     const userId_db: string = profile.id
 
-    // Get entry for specific date
+    // Get entry for specific date, or create if doesn't exist
     const { data: entry, error: entryError } = await supabaseAdmin
       .from('daily_entries')
       .select('*')
       .eq('user_id', userId_db)
       .eq('entry_date', date)
-      .single()
+      .maybeSingle()
 
-    if (entryError || !entry) {
-      return NextResponse.json({ error: 'Entry not found' }, { status: 404 })
+    // If entry doesn't exist, create it
+    if (!entry) {
+      const { createDefaultDailyEntry, fromDatabaseDailyEntry } = await import('@/lib/utils/typeConverters')
+      const defaultEntry = createDefaultDailyEntry(userId_db, date)
+      
+      const { data: newEntry, error: createError } = await (
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        supabaseAdmin.from('daily_entries') as any
+      )
+        .insert(defaultEntry)
+        .select()
+        .single()
+      
+      if (createError) {
+        console.error('Error creating entry for date:', date, createError)
+        return NextResponse.json(
+          { 
+            error: 'Failed to create entry',
+            details: createError.message
+          },
+          { status: 500 }
+        )
+      }
+      
+      if (!newEntry) {
+        return NextResponse.json(
+          { error: 'Failed to create entry: No data returned' },
+          { status: 500 }
+        )
+      }
+      
+      return NextResponse.json(fromDatabaseDailyEntry(newEntry))
+    }
+
+    if (entryError) {
+      return NextResponse.json(
+        { 
+          error: 'Database error',
+          details: entryError.message
+        },
+        { status: 500 }
+      )
     }
 
     return NextResponse.json(entry as DailyEntry)

@@ -49,6 +49,12 @@ export async function GET() {
       day: '2-digit',
     }).format(new Date())
     const today = new Date(todayStr + 'T00:00:00Z')
+    
+    // Debug logging
+    console.log('[Scorecard] User timezone:', profile.timezone)
+    console.log('[Scorecard] Today (user TZ):', todayStr)
+    console.log('[Scorecard] Today (UTC):', today.toISOString())
+    console.log('[Scorecard] Arc start:', profile.arc_start_date)
 
     // Fetch all daily entries in the 90-day range
     const { data: entries, error: entriesError } = await supabaseAdmin
@@ -59,8 +65,14 @@ export async function GET() {
       .order('entry_date', { ascending: true })
 
     if (entriesError) {
-      console.error('Error fetching entries:', entriesError)
+      console.error('[Scorecard] Error fetching entries:', entriesError)
       return NextResponse.json({ error: 'Failed to fetch entries' }, { status: 500 })
+    }
+    
+    console.log('[Scorecard] Fetched entries count:', entries?.length || 0)
+    if (entries && entries.length > 0) {
+      console.log('[Scorecard] First entry:', entries[0])
+      console.log('[Scorecard] Last entry:', entries[entries.length - 1])
     }
 
     // Create a map of date -> score for quick lookup
@@ -108,8 +120,15 @@ export async function GET() {
         currentDate.setUTCDate(currentDate.getUTCDate() + dayOffset)
         
         const dateStr = currentDate.toISOString().split('T')[0]
-        const isFuture = currentDate > today
+        // More explicit comparison: compare YYYY-MM-DD strings instead of Date objects
+        // This avoids any potential timezone confusion
+        const isFuture = dateStr > todayStr
         const score = scoreMap.get(dateStr) ?? 0
+        
+        // Debug: Log first few and last few days
+        if (dayOffset < 3 || dayOffset === 9 || dayOffset === 10 || dayOffset > 87) {
+          console.log(`[Scorecard] Day ${dayOffset}: ${dateStr}, isFuture: ${isFuture} (${dateStr} > ${todayStr}), score: ${score}`)
+        }
 
         days.push({
           date: dateStr,

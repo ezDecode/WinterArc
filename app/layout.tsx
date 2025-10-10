@@ -34,6 +34,14 @@ export const metadata: Metadata = {
   title: 'Winter Arc Tracker',
   description: 'A 90-day personal habit tracking application with automatic daily resets and comprehensive progress analytics',
   manifest: '/manifest.json',
+  icons: {
+    icon: [
+      { url: '/favicon.webp', type: 'image/webp' },
+    ],
+    apple: [
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+    ],
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black',

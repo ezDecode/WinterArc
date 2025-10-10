@@ -15,20 +15,23 @@ interface UseDailyEntryReturn {
 
 /**
  * Hook to manage daily entry state with auto-save
+ * @param date - Optional date string (YYYY-MM-DD). If not provided, uses today's date
  * @returns Daily entry state and methods
  */
-export function useDailyEntry(): UseDailyEntryReturn {
+export function useDailyEntry(date?: string): UseDailyEntryReturn {
   const [entry, setEntry] = useState<DailyEntry | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // Fetch today's entry
+  // Fetch entry for specified date or today
   const fetchEntry = useCallback(async () => {
     try {
       setIsLoading(true)
       setError(null)
       
-      const response = await fetch('/api/daily/today')
+      // Use specific date API endpoint if date is provided, otherwise use /today
+      const apiUrl = date ? `/api/daily/${date}` : '/api/daily/today'
+      const response = await fetch(apiUrl)
       
       if (!response.ok) {
         // Try to get error details from response
@@ -77,9 +80,9 @@ export function useDailyEntry(): UseDailyEntryReturn {
     } finally {
       setIsLoading(false)
     }
-  }, [])
+  }, [date])
 
-  // Load entry on mount
+  // Load entry on mount and when date changes
   useEffect(() => {
     fetchEntry()
   }, [fetchEntry])

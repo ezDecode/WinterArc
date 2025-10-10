@@ -14,7 +14,7 @@ try {
     const trimmedLine = line.trim()
     if (!trimmedLine || trimmedLine.startsWith('#')) return
     
-    const match = trimmedLine.match(/^([A-Z_][A-Z0-9_]*)=(.*)$/)
+    const match = trimmedLine.match(/^([A-Za-z_][A-Za-z0-9_]*)=(.*)$/)
     if (match) {
       const [, key, rawValue] = match
       // Remove quotes if present

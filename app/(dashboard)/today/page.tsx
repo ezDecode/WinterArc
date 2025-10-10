@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { useDailyEntry } from '@/hooks/useDailyEntry'
 import { useKeyboardShortcuts, useTodayShortcuts } from '@/hooks/useKeyboardShortcuts'
 import { StudyBlocksTracker } from '@/components/tracker/StudyBlocksTracker'
@@ -20,8 +21,12 @@ import type { StudyBlock, Reading, Pushups, Meditation, Notes } from '@/types'
 export const dynamic = 'force-dynamic'
 
 export default function TodayPage() {
+  // Get date from URL query parameter if present
+  const searchParams = useSearchParams()
+  const dateParam = searchParams.get('date') // Will be YYYY-MM-DD or null
+  
   const { entry, isLoading, error, updateEntry, refreshEntry, isSaving, lastSaved } =
-    useDailyEntry()
+    useDailyEntry(dateParam || undefined)
   const [showShortcuts, setShowShortcuts] = useState(false)
 
   // Keyboard shortcuts - must be called before any conditional returns
@@ -80,9 +85,11 @@ export default function TodayPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-6">
         <div className="flex-1">
-          <h1 className="text-2xl sm:text-3xl font-bold text-text-primary">Today&apos;s Tracker</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-text-primary">
+            {dateParam ? 'Daily Tracker' : 'Today\'s Tracker'}
+          </h1>
           <p className="text-sm sm:text-base text-text-secondary mt-1">
-            Track your daily habits and reach 5/5 points
+            {dateParam ? 'View and edit habits for this day' : 'Track your daily habits and reach 5/5 points'}
           </p>
           <div className="mt-3 sm:mt-2 flex flex-col xs:flex-row xs:items-center gap-3 sm:gap-4">
             <SaveStatus isSaving={isSaving} lastSaved={lastSaved} error={null} />
