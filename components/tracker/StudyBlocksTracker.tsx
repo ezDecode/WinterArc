@@ -3,36 +3,16 @@
 import { TARGETS } from '@/lib/constants/targets'
 import type { StudyBlock } from '@/types'
 import { Plus, Trash2, Clock, Check } from 'lucide-react'
-import { getTaskCompletionMessage, getTaskProgressMessage } from '@/lib/utils/motivation'
-import { useMotivationNotification, TaskCompletionNotification } from '@/components/ui/MotivationNotification'
 
 interface StudyBlocksTrackerProps {
   blocks: StudyBlock[]
   onChange: (blocks: StudyBlock[]) => void
 }
-
 export function StudyBlocksTracker({ blocks, onChange }: StudyBlocksTrackerProps) {
-  const { currentMessage, showMessage, clearMessage } = useMotivationNotification()
   const handleCheckboxChange = (index: number, checked: boolean) => {
     const newBlocks = [...blocks]
-    const previouslyChecked = newBlocks[index].checked
     newBlocks[index] = { ...newBlocks[index], checked }
     onChange(newBlocks)
-
-    // Show motivation message when checking a block
-    if (checked && !previouslyChecked) {
-      const checkedCount = newBlocks.filter(block => block.checked).length
-      
-      if (checkedCount >= 4) {
-        // Task completed!
-        const completionMessage = getTaskCompletionMessage('study')
-        showMessage(completionMessage)
-      } else {
-        // Show progress message
-        const progressMessage = getTaskProgressMessage('study')
-        showMessage(progressMessage)
-      }
-    }
   }
 
   const handleTopicChange = (index: number, topic: string) => {
@@ -57,16 +37,7 @@ export function StudyBlocksTracker({ blocks, onChange }: StudyBlocksTrackerProps
   const totalHours = blocks.length
 
   return (
-    <>
-      {/* Motivation Notification */}
-      {currentMessage && (
-        <TaskCompletionNotification
-          message={currentMessage}
-          onClose={clearMessage}
-        />
-      )}
-      
-      <div className="bg-surface border border-border rounded-xl p-5 sm:p-6 lg:p-8 animate-in shadow-sm hover:shadow-md transition-all duration-300">
+    <div className="bg-surface border border-border rounded-xl p-5 sm:p-6 lg:p-8 animate-in shadow-sm hover:shadow-md transition-all duration-300">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-5 sm:mb-6 gap-4 sm:gap-6">
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-lg shadow-purple-500/30">
@@ -199,7 +170,6 @@ export function StudyBlocksTracker({ blocks, onChange }: StudyBlocksTrackerProps
           <span>Study goal achieved! +1 point</span>
         </div>
       )}
-      </div>
-    </>
+    </div>
   )
 }

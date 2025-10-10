@@ -3,8 +3,6 @@
 import { TARGETS } from '@/lib/constants/targets'
 import type { Reading } from '@/types'
 import { Check, BookOpen } from 'lucide-react'
-import { getTaskCompletionMessage } from '@/lib/utils/motivation'
-import { useMotivationNotification, TaskCompletionNotification } from '@/components/ui/MotivationNotification'
 
 interface ReadingTrackerProps {
   reading: Reading
@@ -12,31 +10,8 @@ interface ReadingTrackerProps {
 }
 
 export function ReadingTracker({ reading, onChange }: ReadingTrackerProps) {
-  const { currentMessage, showMessage, clearMessage } = useMotivationNotification()
-
-  const handleToggle = () => {
-    const wasChecked = reading.checked
-    const newReading = { ...reading, checked: !reading.checked }
-    onChange(newReading)
-
-    // Show motivation when completing the task
-    if (!wasChecked && newReading.checked) {
-      const completionMessage = getTaskCompletionMessage('reading')
-      showMessage(completionMessage)
-    }
-  }
-
   return (
-    <>
-      {/* Motivation Notification */}
-      {currentMessage && (
-        <TaskCompletionNotification
-          message={currentMessage}
-          onClose={clearMessage}
-        />
-      )}
-      
-      <div className="bg-surface border border-border rounded-lg p-6 animate-in">
+    <div className="bg-surface border border-border rounded-lg p-6 animate-in">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-3">
           <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg shadow-green-500/30">
@@ -68,7 +43,7 @@ export function ReadingTracker({ reading, onChange }: ReadingTrackerProps) {
             : 'bg-background border-border hover:border-green-400/50'
         }`}>
           <button
-            onClick={handleToggle}
+            onClick={() => onChange({ ...reading, checked: !reading.checked })}
             className="relative flex-shrink-0 group/checkbox"
             aria-label="Toggle reading completion"
           >
@@ -127,7 +102,6 @@ export function ReadingTracker({ reading, onChange }: ReadingTrackerProps) {
           <span>Reading completed! +1 point</span>
         </div>
       )}
-      </div>
-    </>
+    </div>
   )
 }
