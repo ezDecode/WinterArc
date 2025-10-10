@@ -1,7 +1,8 @@
 'use client'
 
-import { memo } from 'react'
+import { memo, useEffect, useRef } from 'react'
 import { DAILY_MAX_SCORE, SCORE_COLORS } from '@/lib/constants/targets'
+import { useConfetti } from '@/hooks/useConfetti'
 
 interface DailyScoreDisplayProps {
   score: number
@@ -13,6 +14,26 @@ export const DailyScoreDisplay = memo(function DailyScoreDisplay({
   isComplete,
 }: DailyScoreDisplayProps) {
   const percentage = (score / DAILY_MAX_SCORE) * 100
+  const { triggerConfetti } = useConfetti()
+  const hasTriggeredRef = useRef(false)
+
+  // Trigger confetti on perfect day completion
+  useEffect(() => {
+    if (isComplete && score === DAILY_MAX_SCORE && !hasTriggeredRef.current) {
+      // Small delay to let the UI update first
+      const timer = setTimeout(() => {
+        triggerConfetti()
+        hasTriggeredRef.current = true
+      }, 300)
+      
+      return () => clearTimeout(timer)
+    }
+    
+    // Reset flag when not complete
+    if (!isComplete || score !== DAILY_MAX_SCORE) {
+      hasTriggeredRef.current = false
+    }
+  }, [isComplete, score, triggerConfetti])
 
   const getScoreColor = () => {
     if (score === 5) return SCORE_COLORS.PERFECT

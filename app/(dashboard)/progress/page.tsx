@@ -3,8 +3,9 @@
 import { useEffect, useState } from 'react'
 import dynamicImport from 'next/dynamic'
 import { StreakCounter } from '@/components/analytics/StreakCounter'
+import { CalendarHeatmap } from '@/components/analytics/CalendarHeatmap'
 import { SkeletonStats, SkeletonChart } from '@/components/ui/Skeleton'
-import type { DashboardStats } from '@/types'
+import type { DashboardStats, HeatmapData } from '@/types'
 
 // Force dynamic rendering - this page requires authentication
 export const dynamic = 'force-dynamic'
@@ -24,26 +25,38 @@ type DashboardData = DashboardStats & {
 
 export default function ProgressPage() {
   const [dashboard, setDashboard] = useState<DashboardData | null>(null)
+  const [heatmapData, setHeatmapData] = useState<HeatmapData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    async function fetchDashboard() {
+    async function fetchData() {
       try {
-        const response = await fetch('/api/stats/dashboard')
-        if (!response.ok) {
-          throw new Error('Failed to fetch dashboard data')
+        // Fetch both dashboard and heatmap data in parallel
+        const [dashboardRes, heatmapRes] = await Promise.all([
+          fetch('/api/stats/dashboard'),
+          fetch('/api/stats/heatmap?days=90')
+        ])
+
+        if (!dashboardRes.ok || !heatmapRes.ok) {
+          throw new Error('Failed to fetch data')
         }
-        const data = await response.json()
-        setDashboard(data)
+
+        const [dashboardData, heatmapData] = await Promise.all([
+          dashboardRes.json(),
+          heatmapRes.json()
+        ])
+
+        setDashboard(dashboardData)
+        setHeatmapData(heatmapData)
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load dashboard')
+        setError(err instanceof Error ? err.message : 'Failed to load data')
       } finally {
         setLoading(false)
       }
     }
 
-    fetchDashboard()
+    fetchData()
   }, [])
 
   if (loading) {
@@ -91,6 +104,15 @@ export default function ProgressPage() {
         currentStreak={dashboard.currentStreak}
         longestStreak={dashboard.longestStreak}
       />
+
+      {/* Calendar Heatmap */}
+      {heatmapData && (
+        <CalendarHeatmap
+          data={heatmapData.data}
+          startDate={heatmapData.startDate}
+          endDate={heatmapData.endDate}
+        />
+      )}
 
       {/* Key Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">

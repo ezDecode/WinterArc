@@ -109,3 +109,16 @@ export interface ScorecardData {
     weekTotal: number
   }[]
 }
+
+export interface HeatmapDay {
+  date: string
+  score: number
+  isComplete: boolean
+}
+
+export interface HeatmapData {
+  startDate: string
+  endDate: string
+  days: number
+  data: HeatmapDay[]
+}
