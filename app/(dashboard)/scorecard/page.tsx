@@ -113,10 +113,10 @@ export default function ScorecardPage() {
       </div>
 
       {/* Scorecard Grid */}
-      <div className="bg-surface border border-border rounded-xl p-4 sm:p-5 md:p-6 lg:p-8 overflow-x-auto shadow-sm hover:shadow-md transition-all duration-300">
-        <div className="min-w-[640px] sm:min-w-[700px]">
+      <div className="bg-surface border border-border rounded-xl p-3 sm:p-4 md:p-6 lg:p-8 overflow-x-auto shadow-sm hover:shadow-md transition-all duration-300">
+        <div className="min-w-[320px] sm:min-w-[640px] md:min-w-[700px]">
           {/* Header Row */}
-          <div className="grid grid-cols-9 gap-2 sm:gap-3 mb-4 sm:mb-5">
+          <div className="grid grid-cols-9 gap-1 sm:gap-2 md:gap-3 mb-3 sm:mb-4 md:mb-5">
             <div className="text-xs font-semibold text-text-secondary text-center">Week</div>
             {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
               <div key={day} className="text-xs font-semibold text-text-secondary text-center">
@@ -127,9 +127,9 @@ export default function ScorecardPage() {
           </div>
 
           {/* Week Rows */}
-          <div className="space-y-2 sm:space-y-3">
+          <div className="space-y-1 sm:space-y-2 md:space-y-3">
             {scorecard.weeks.map((week) => (
-              <div key={week.weekNumber} className="grid grid-cols-9 gap-2 sm:gap-3">
+              <div key={week.weekNumber} className="grid grid-cols-9 gap-1 sm:gap-2 md:gap-3">
                 {/* Week Number */}
                 <div className="flex items-center justify-center">
                   <div className="text-xs sm:text-sm font-semibold text-text-primary">
@@ -142,7 +142,7 @@ export default function ScorecardPage() {
                   day.isEmpty ? (
                     <div
                       key={index}
-                      className="aspect-square min-h-[36px] sm:min-h-[44px]"
+                      className="aspect-square min-h-[28px] sm:min-h-[36px] md:min-h-[44px]"
                     >
                       {/* Empty padding cell */}
                     </div>
@@ -152,7 +152,7 @@ export default function ScorecardPage() {
                       href={day.isFuture ? '#' : `/today?date=${day.date}`}
                       className={`
                         aspect-square rounded-lg border transition-all duration-200
-                        flex items-center justify-center min-h-[36px] sm:min-h-[44px]
+                        flex items-center justify-center min-h-[28px] sm:min-h-[36px] md:min-h-[44px]
                         ${getScoreColor(day.score, day.isFuture, day.isEmpty)} hover:scale-105
                         ${getScoreColor(day.score, day.isFuture, day.isEmpty)}
                       `}
@@ -176,10 +176,10 @@ export default function ScorecardPage() {
           </div>
 
           {/* Summary Stats */}
-          <div className="mt-6 sm:mt-8 pt-6 sm:pt-8 border-t border-border">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+          <div className="mt-4 sm:mt-6 md:mt-8 pt-4 sm:pt-6 md:pt-8 border-t border-border">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
               <div className="text-center">
-                <div className="text-lg sm:text-2xl font-bold text-success">
+                <div className="text-base sm:text-lg md:text-2xl font-bold text-success">
                   {scorecard.weeks.reduce((sum, week) => 
                     sum + week.days.filter(d => !d.isFuture && d.score === 5).length, 0
                   )}
@@ -187,7 +187,7 @@ export default function ScorecardPage() {
                 <div className="text-xs text-text-secondary mt-1">Perfect Days</div>
               </div>
               <div className="text-center">
-                <div className="text-lg sm:text-2xl font-bold text-warning">
+                <div className="text-base sm:text-lg md:text-2xl font-bold text-warning">
                   {scorecard.weeks.reduce((sum, week) => 
                     sum + week.days.filter(d => !d.isFuture && d.score >= 3 && d.score < 5).length, 0
                   )}
@@ -195,7 +195,7 @@ export default function ScorecardPage() {
                 <div className="text-xs text-text-secondary mt-1">Good Days</div>
               </div>
               <div className="text-center">
-                <div className="text-lg sm:text-2xl font-bold text-error">
+                <div className="text-base sm:text-lg md:text-2xl font-bold text-error">
                   {scorecard.weeks.reduce((sum, week) => 
                     sum + week.days.filter(d => !d.isFuture && d.score > 0 && d.score < 3).length, 0
                   )}
@@ -203,7 +203,7 @@ export default function ScorecardPage() {
                 <div className="text-xs text-text-secondary mt-1">Needs Work</div>
               </div>
               <div className="text-center">
-                <div className="text-lg sm:text-2xl font-bold text-text-primary">
+                <div className="text-base sm:text-lg md:text-2xl font-bold text-text-primary">
                   {scorecard.weeks.reduce((sum, week) => sum + week.weekTotal, 0)}
                 </div>
                 <div className="text-xs text-text-secondary mt-1">Total Points</div>
