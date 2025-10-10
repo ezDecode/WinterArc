@@ -37,12 +37,31 @@ export async function GET() {
       )
     }
 
-    // Fetch all daily entries
+    // Calculate arc end date (90 days from start)
+    const arcStartDate = new Date(profile.arc_start_date + 'T00:00:00Z')
+    const arcEndDate = new Date(arcStartDate)
+    arcEndDate.setUTCDate(arcEndDate.getUTCDate() + 90)
+    
+    // Get today's date in user's timezone
+    const todayStr = new Intl.DateTimeFormat('en-CA', {
+      timeZone: profile.timezone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).format(new Date())
+    const today = new Date(todayStr + 'T00:00:00Z')
+    
+    // Calculate upper bound: min(arcEndDate, today)
+    const upperBoundDate = arcEndDate < today ? arcEndDate : today
+    const upperBoundStr = upperBoundDate.toISOString().split('T')[0]
+    
+    // Fetch all daily entries within the arc date range, up to today
     const { data: entries, error: entriesError } = await supabaseAdmin
       .from('daily_entries')
       .select('*')
       .eq('user_id', profile.id)
       .gte('entry_date', profile.arc_start_date)
+      .lte('entry_date', upperBoundStr)
       .order('entry_date', { ascending: true })
 
     if (entriesError) {
@@ -53,8 +72,6 @@ export async function GET() {
     const dailyEntries = entries as DailyEntry[]
 
     // Calculate arc progress
-    const arcStartDate = new Date(profile.arc_start_date)
-    const today = new Date()
     const daysSinceStart = Math.floor((today.getTime() - arcStartDate.getTime()) / (1000 * 60 * 60 * 24))
     const totalDays = Math.min(daysSinceStart, 90)
     const completedDays = dailyEntries.filter(e => e.daily_score === 5).length

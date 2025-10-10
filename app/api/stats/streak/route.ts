@@ -36,11 +36,31 @@ export async function GET() {
       )
     }
 
-    // Fetch all daily entries for streak calculation
+    // Calculate arc end date (90 days from start)
+    const arcStartDate = new Date(profile.arc_start_date + 'T00:00:00Z')
+    const arcEndDate = new Date(arcStartDate)
+    arcEndDate.setUTCDate(arcEndDate.getUTCDate() + 90)
+    
+    // Get today's date in user's timezone
+    const todayStr = new Intl.DateTimeFormat('en-CA', {
+      timeZone: profile.timezone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).format(new Date())
+    const today = new Date(todayStr + 'T00:00:00Z')
+    
+    // Calculate upper bound: min(arcEndDate, today)
+    const upperBoundDate = arcEndDate < today ? arcEndDate : today
+    const upperBoundStr = upperBoundDate.toISOString().split('T')[0]
+    
+    // Fetch all daily entries for streak calculation within the arc range
     const { data: entries, error: entriesError } = await supabaseAdmin
       .from('daily_entries')
       .select('entry_date, daily_score')
       .eq('user_id', profile.id)
+      .gte('entry_date', profile.arc_start_date)
+      .lte('entry_date', upperBoundStr)
       .order('entry_date', { ascending: true })
 
     if (entriesError) {
