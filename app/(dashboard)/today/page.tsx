@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useDailyEntry } from '@/hooks/useDailyEntry'
 import { useKeyboardShortcuts, useTodayShortcuts } from '@/hooks/useKeyboardShortcuts'
@@ -20,7 +20,8 @@ import type { StudyBlock, Reading, Pushups, Meditation, Notes } from '@/types'
 // Force dynamic rendering - this page requires authentication
 export const dynamic = 'force-dynamic'
 
-export default function TodayPage() {
+// Component that uses searchParams - must be wrapped in Suspense
+function TodayContent() {
   // Get date from URL query parameter if present
   const searchParams = useSearchParams()
   const dateParam = searchParams.get('date') // Will be YYYY-MM-DD or null
@@ -162,5 +163,18 @@ export default function TodayPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+// Main page component with Suspense boundary
+export default function TodayPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-text-secondary">Loading...</div>
+      </div>
+    }>
+      <TodayContent />
+    </Suspense>
   )
 }

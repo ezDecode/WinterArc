@@ -8,6 +8,9 @@
 
 # testing
 /coverage
+/testsprite_tests
+.nyc_output
+c8-coverage
 
 # next.js
 /.next/
