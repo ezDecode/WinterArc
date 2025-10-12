@@ -1,0 +1,60 @@
+{
+  "info": {
+    "name": "WinterArc API Collection",
+    "description": "Complete API collection for WinterArc - A 90-day habit tracking application",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://rebuild.creativesky.me",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Profile",
+      "item": [
+        {
+          "name": "Get User Profile",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/profile"
+          }
+        },
+        {
+          "name": "Update User Profile",
+          "request": {
+            "method": "PATCH",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"timezone\": \"America/New_York\"}"
+            },
+            "url": "{{baseUrl}}/api/profile"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Daily Entries",
+      "item": [
+        {
+          "name": "Get Today's Entry",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/daily/today"
+          }
+        },
+        {
+          "name": "Get Heatmap Data",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/stats/heatmap?days=90"
+          }
+        }
+      ]
+    }
+  ]
+}

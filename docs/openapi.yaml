@@ -1,0 +1,361 @@
+openapi: 3.0.3
+info:
+  title: WinterArc API
+  description: |
+    A 90-day personal habit tracking application with automatic daily resets and comprehensive progress analytics.
+    
+    ## Authentication
+    All endpoints require Clerk authentication via session cookies or JWT tokens (except cron jobs which use CRON_SECRET).
+    
+    ## Base URL
+    `https://rebuild.creativesky.me`
+  version: 1.0.0
+  contact:
+    name: WinterArc Support
+  license:
+    name: MIT
+
+servers:
+  - url: https://rebuild.creativesky.me
+    description: Production server
+
+tags:
+  - name: Profile
+    description: User profile management
+  - name: Daily Entries
+    description: Daily habit tracking entries
+  - name: Statistics
+    description: Progress statistics and analytics
+  - name: Weekly Reviews
+    description: Weekly reflection and review management
+  - name: Cron Jobs
+    description: Scheduled background jobs
+  - name: Testing
+    description: Testing and debugging endpoints
+
+paths:
+  /api/profile:
+    get:
+      tags:
+        - Profile
+      summary: Get user profile
+      description: Get or create the current user's profile
+      operationId: getProfile
+      responses:
+        '200':
+          description: Profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - clerkAuth: []
+    
+    patch:
+      tags:
+        - Profile
+      summary: Update user profile
+      description: Update user profile settings (currently only timezone)
+      operationId: updateProfile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                timezone:
+                  type: string
+                  pattern: '^[A-Za-z]+/[A-Za-z_]+$'
+                  example: America/New_York
+      responses:
+        '200':
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - clerkAuth: []
+
+  /api/daily/today:
+    get:
+      tags:
+        - Daily Entries
+      summary: Get today's entry
+      description: Get or create the daily entry for today (based on user's timezone)
+      operationId: getTodayEntry
+      responses:
+        '200':
+          description: Entry retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DailyEntry'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+      security:
+        - clerkAuth: []
+
+  /api/daily/{date}:
+    get:
+      tags:
+        - Daily Entries
+      summary: Get entry by date
+      description: Get or create a daily entry for a specific date
+      operationId: getEntryByDate
+      parameters:
+        - name: date
+          in: path
+          required: true
+          schema:
+            type: string
+            format: date
+            example: "2024-01-15"
+      responses:
+        '200':
+          description: Entry retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DailyEntry'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - clerkAuth: []
+    
+    patch:
+      tags:
+        - Daily Entries
+      summary: Update entry by date
+      description: Update a daily entry for a specific date (automatically recalculates score)
+      operationId: updateEntryByDate
+      parameters:
+        - name: date
+          in: path
+          required: true
+          schema:
+            type: string
+            format: date
+            example: "2024-01-15"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DailyEntryUpdate'
+      responses:
+        '200':
+          description: Entry updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DailyEntry'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - clerkAuth: []
+
+  /api/stats/heatmap:
+    get:
+      tags:
+        - Statistics
+      summary: Get activity heatmap data
+      description: Get heatmap data for visualizing daily activity over a period
+      operationId: getHeatmapData
+      parameters:
+        - name: days
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 90
+            example: 90
+      responses:
+        '200':
+          description: Heatmap data retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HeatmapData'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - clerkAuth: []
+
+components:
+  securitySchemes:
+    clerkAuth:
+      type: apiKey
+      in: cookie
+      name: __session
+      description: Clerk session cookie
+    
+    cronSecret:
+      type: http
+      scheme: bearer
+      description: CRON_SECRET environment variable
+
+  schemas:
+    Profile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        clerk_user_id:
+          type: string
+        email:
+          type: string
+          format: email
+        timezone:
+          type: string
+          example: Asia/Kolkata
+        arc_start_date:
+          type: string
+          format: date
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    DailyEntry:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        entry_date:
+          type: string
+          format: date
+        daily_score:
+          type: integer
+          minimum: 0
+          maximum: 5
+        is_complete:
+          type: boolean
+
+    DailyEntryUpdate:
+      type: object
+      properties:
+        study_blocks:
+          type: array
+          items:
+            type: object
+        reading:
+          type: object
+        pushups:
+          type: object
+        meditation:
+          type: object
+        water_bottles:
+          type: array
+          items:
+            type: boolean
+
+    HeatmapData:
+      type: object
+      properties:
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        days:
+          type: integer
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+                format: date
+              score:
+                type: integer
+              isComplete:
+                type: boolean
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        details:
+          type: string
+        code:
+          type: string
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    ServiceUnavailable:
+      description: Service unavailable
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'

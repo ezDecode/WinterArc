@@ -10,7 +10,7 @@ interface CalendarHeatmapProps {
   endDate: string
 }
 
-export function CalendarHeatmap({ data, startDate, endDate }: CalendarHeatmapProps) {
+export function CalendarHeatmap({ data }: CalendarHeatmapProps) {
   const [hoveredDay, setHoveredDay] = useState<HeatmapDay | null>(null)
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 })
 
